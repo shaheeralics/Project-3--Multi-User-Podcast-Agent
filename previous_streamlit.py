@@ -1,7 +1,6 @@
 """
-Professional Podcast Generator App - Production Version
+Professional Podcast Generator App
 Converts articles to conversational podcasts using OpenAI and ElevenLabs
-Uses Streamlit secrets for API keys (no manual input required)
 """
 
 import streamlit as st
@@ -80,15 +79,6 @@ st.markdown("""
         margin: 1rem 0;
     }
     
-    .info-box {
-        background: #d1ecf1;
-        border: 1px solid #bee5eb;
-        color: #0c5460;
-        padding: 1rem;
-        border-radius: 5px;
-        margin: 1rem 0;
-    }
-    
     .stButton > button {
         background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         color: white;
@@ -106,19 +96,6 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
-def get_api_keys():
-    """Get API keys from Streamlit secrets"""
-    try:
-        openai_api_key = st.secrets["openaiapi"]
-        elevenlabs_api_key = st.secrets["elevenlabsapi"]
-        return openai_api_key, elevenlabs_api_key
-    except KeyError as e:
-        st.error(f"Missing API key in secrets: {e}")
-        st.stop()
-    except Exception as e:
-        st.error(f"Error accessing secrets: {e}")
-        st.stop()
-
 def initialize_session_state():
     """Initialize session state variables"""
     if 'voices_loaded' not in st.session_state:
@@ -131,8 +108,6 @@ def initialize_session_state():
         st.session_state.generated_script = []
     if 'audio_generated' not in st.session_state:
         st.session_state.audio_generated = False
-    if 'api_keys_loaded' not in st.session_state:
-        st.session_state.api_keys_loaded = False
 
 def render_header():
     """Render the main application header"""
@@ -140,21 +115,24 @@ def render_header():
     <div class="main-header">
         <h1>🎙️ AI Podcast Generator</h1>
         <p>Transform any article into an engaging conversational podcast</p>
-        <small>✅ Production Ready - API Keys Configured</small>
     </div>
     """, unsafe_allow_html=True)
 
-def render_api_status(openai_api_key, elevenlabs_api_key):
-    """Render API configuration status"""
-    st.markdown('<div class="section-header"><h3>🔑 API Configuration Status</h3></div>', unsafe_allow_html=True)
+def render_api_section():
+    """Render API configuration section"""
+    st.markdown('<div class="section-header"><h3>🔑 API Configuration</h3></div>', unsafe_allow_html=True)
     
     col1, col2 = st.columns(2)
     
     with col1:
-        st.markdown('<div class="info-box">', unsafe_allow_html=True)
-        st.subheader("✅ OpenAI API")
-        st.write("**Status:** Connected")
-        st.write(f"**Key:** ...{openai_api_key[-8:]}")
+        st.markdown('<div class="api-section">', unsafe_allow_html=True)
+        st.subheader("OpenAI API")
+        openai_api_key = st.text_input(
+            "OpenAI API Key",
+            type="password",
+            help="Required for script generation",
+            key="openai_key"
+        )
         openai_model = st.selectbox(
             "Model",
             ["gpt-4o-mini", "gpt-4o", "gpt-3.5-turbo"],
@@ -163,33 +141,34 @@ def render_api_status(openai_api_key, elevenlabs_api_key):
         st.markdown('</div>', unsafe_allow_html=True)
     
     with col2:
-        st.markdown('<div class="info-box">', unsafe_allow_html=True)
-        st.subheader("✅ ElevenLabs API")
-        st.write("**Status:** Connected")
-        st.write(f"**Key:** ...{elevenlabs_api_key[-8:]}")
+        st.markdown('<div class="api-section">', unsafe_allow_html=True)
+        st.subheader("ElevenLabs API")
+        elevenlabs_api_key = st.text_input(
+            "ElevenLabs API Key",
+            type="password",
+            help="Required for voice synthesis",
+            key="elevenlabs_key"
+        )
         
-        if not st.session_state.voices_loaded:
-            if st.button("🎵 Load Available Voices", key="load_voices"):
+        if elevenlabs_api_key and not st.session_state.voices_loaded:
+            if st.button("Load Voices", key="load_voices"):
                 with st.spinner("Loading available voices..."):
                     try:
                         voices = get_available_voices(elevenlabs_api_key)
                         st.session_state.available_voices = voices
                         st.session_state.voices_loaded = True
-                        st.success(f"✅ Loaded {len(voices)} voices successfully!")
-                        st.rerun()
+                        st.success(f"Loaded {len(voices)} voices successfully!")
                     except Exception as e:
-                        st.error(f"❌ Failed to load voices: {str(e)}")
-        else:
-            st.success(f"✅ {len(st.session_state.available_voices)} voices loaded")
+                        st.error(f"Failed to load voices: {str(e)}")
         
         st.markdown('</div>', unsafe_allow_html=True)
     
-    return openai_model
+    return openai_api_key, elevenlabs_api_key, openai_model
 
 def render_voice_selection():
     """Render voice selection interface"""
     if not st.session_state.voices_loaded:
-        st.markdown('<div class="info-box">🎵 Please load voices first to configure podcast speakers</div>', unsafe_allow_html=True)
+        st.info("🎵 Load voices first to configure podcast speakers")
         return None, None, None, None
     
     st.markdown('<div class="section-header"><h3>🎭 Speaker Configuration</h3></div>', unsafe_allow_html=True)
@@ -209,18 +188,17 @@ def render_voice_selection():
             key="host_voice"
         )
         
-        if host_voice and st.button("🔊 Preview Host Voice", key="preview_host"):
+        if host_voice and st.button("Preview Host Voice", key="preview_host"):
             with st.spinner("Generating preview..."):
                 try:
-                    _, elevenlabs_api_key = get_api_keys()
-                    audio_data = preview_voice(
-                        elevenlabs_api_key,
+                    audio_url = preview_voice(
+                        st.session_state.elevenlabs_key,
                         host_voice[1],
                         f"G'day! I'm {host_name}, your podcast host."
                     )
-                    st.audio(audio_data)
+                    st.audio(audio_url)
                 except Exception as e:
-                    st.error(f"❌ Preview failed: {str(e)}")
+                    st.error(f"Preview failed: {str(e)}")
         
         st.markdown('</div>', unsafe_allow_html=True)
     
@@ -235,18 +213,17 @@ def render_voice_selection():
             key="guest_voice"
         )
         
-        if guest_voice and st.button("🔊 Preview Guest Voice", key="preview_guest"):
+        if guest_voice and st.button("Preview Guest Voice", key="preview_guest"):
             with st.spinner("Generating preview..."):
                 try:
-                    _, elevenlabs_api_key = get_api_keys()
-                    audio_data = preview_voice(
-                        elevenlabs_api_key,
+                    audio_url = preview_voice(
+                        st.session_state.elevenlabs_key,
                         guest_voice[1],
                         f"Hello! I'm {guest_name}, excited to be here!"
                     )
-                    st.audio(audio_data)
+                    st.audio(audio_url)
                 except Exception as e:
-                    st.error(f"❌ Preview failed: {str(e)}")
+                    st.error(f"Preview failed: {str(e)}")
         
         st.markdown('</div>', unsafe_allow_html=True)
     
@@ -262,7 +239,7 @@ def render_article_section():
         help="Paste the URL of the article you want to convert to a podcast"
     )
     
-    col1, col2, col3 = st.columns(3)
+    col1, col2 = st.columns([3, 1])
     with col1:
         pause_duration = st.slider(
             "Pause between speakers (ms)",
@@ -280,36 +257,25 @@ def render_article_section():
             help="Generate script in Australian conversational style"
         )
     
-    with col3:
-        st.metric("📊 Status", "Ready" if article_url else "Waiting for URL")
-    
     return article_url, pause_duration, aussie_style
 
-def render_script_generation(openai_model, article_url, host_name, guest_name, aussie_style):
+def render_script_generation(openai_api_key, openai_model, article_url, host_name, guest_name, aussie_style):
     """Render script generation section"""
     st.markdown('<div class="section-header"><h3>📝 Script Generation</h3></div>', unsafe_allow_html=True)
     
-    if not all([article_url, host_name, guest_name]):
-        st.warning("⚠️ Please fill in all required fields above to generate script")
+    if not all([openai_api_key, article_url, host_name, guest_name]):
+        st.warning("Please fill in all required fields above to generate script")
         return
     
     if st.button("🚀 Generate Podcast Script", key="generate_script"):
-        with st.spinner("🔄 Processing article and generating script..."):
+        with st.spinner("Scraping article and generating script..."):
             try:
-                # Progress tracking
-                progress_bar = st.progress(0)
-                status_text = st.empty()
-                
                 # Step 1: Scrape article
-                status_text.text("📖 Scraping article content...")
-                progress_bar.progress(20)
+                st.info("📖 Scraping article content...")
                 article = scrape_and_clean(article_url)
                 
                 # Step 2: Generate script
-                status_text.text("🤖 Generating conversational script...")
-                progress_bar.progress(50)
-                
-                openai_api_key, _ = get_api_keys()
+                st.info("🤖 Generating conversational script...")
                 
                 # Import OpenAI here to avoid issues if not installed
                 from openai import OpenAI
@@ -323,8 +289,6 @@ def render_script_generation(openai_model, article_url, host_name, guest_name, a
                     aussie=aussie_style
                 )
                 
-                progress_bar.progress(80)
-                
                 response = client.chat.completions.create(
                     model=openai_model,
                     messages=messages,
@@ -335,32 +299,17 @@ def render_script_generation(openai_model, article_url, host_name, guest_name, a
                 script_content = json.loads(response.choices[0].message.content)
                 st.session_state.generated_script = script_content.get("script", [])
                 st.session_state.script_generated = True
-                st.session_state.article_title = article["title"]
                 
-                progress_bar.progress(100)
-                status_text.text("✅ Script generation complete!")
-                
-                st.markdown('<div class="success-box">🎉 Script generated successfully!</div>', unsafe_allow_html=True)
+                st.markdown('<div class="success-box">✅ Script generated successfully!</div>', unsafe_allow_html=True)
                 
             except Exception as e:
                 st.markdown(f'<div class="error-box">❌ Error: {str(e)}</div>', unsafe_allow_html=True)
     
     # Display generated script
     if st.session_state.script_generated and st.session_state.generated_script:
-        st.subheader("📋 Generated Script Preview")
+        st.subheader("Generated Script Preview")
         
-        # Script statistics
-        col1, col2, col3 = st.columns(3)
-        with col1:
-            st.metric("📊 Total Turns", len(st.session_state.generated_script))
-        with col2:
-            total_words = sum(len(turn.get('text', '').split()) for turn in st.session_state.generated_script)
-            st.metric("📝 Total Words", total_words)
-        with col3:
-            estimated_duration = total_words / 150  # ~150 words per minute
-            st.metric("⏱️ Est. Duration", f"{estimated_duration:.1f} min")
-        
-        with st.expander("🔍 View Full Script", expanded=True):
+        with st.expander("View Full Script", expanded=True):
             for i, turn in enumerate(st.session_state.generated_script, 1):
                 speaker = turn.get('speaker', 'Unknown')
                 text = turn.get('text', '')
@@ -373,22 +322,20 @@ def render_script_generation(openai_model, article_url, host_name, guest_name, a
                 if i < len(st.session_state.generated_script):
                     st.markdown("---")
 
-def render_audio_generation(host_voice, guest_voice, pause_duration):
+def render_audio_generation(elevenlabs_api_key, host_voice, guest_voice, pause_duration):
     """Render audio generation section"""
     if not st.session_state.script_generated:
         return
     
     st.markdown('<div class="section-header"><h3>🎵 Audio Generation</h3></div>', unsafe_allow_html=True)
     
-    if not all([host_voice, guest_voice]):
-        st.warning("⚠️ Please configure voices and load them first")
+    if not all([elevenlabs_api_key, host_voice, guest_voice]):
+        st.warning("Please configure voices and load them first")
         return
     
     if st.button("🎧 Generate Podcast Audio", key="generate_audio"):
-        with st.spinner("🎵 Generating high-quality audio... This may take a few minutes."):
+        with st.spinner("Generating audio... This may take a few minutes."):
             try:
-                _, elevenlabs_api_key = get_api_keys()
-                
                 progress_bar = st.progress(0)
                 status_text = st.empty()
                 
@@ -414,14 +361,6 @@ def render_audio_generation(host_voice, guest_voice, pause_duration):
                 
                 st.markdown('<div class="success-box">🎉 Podcast audio generated successfully!</div>', unsafe_allow_html=True)
                 
-                # Audio statistics
-                audio_size_mb = len(audio_bytes) / (1024 * 1024)
-                col1, col2 = st.columns(2)
-                with col1:
-                    st.metric("📁 File Size", f"{audio_size_mb:.1f} MB")
-                with col2:
-                    st.metric("🎵 Format", "MP3 (192kbps)")
-                
             except Exception as e:
                 st.markdown(f'<div class="error-box">❌ Audio generation failed: {str(e)}</div>', unsafe_allow_html=True)
     
@@ -432,36 +371,22 @@ def render_audio_generation(host_voice, guest_voice, pause_duration):
         # Audio player
         st.audio(st.session_state.audio_bytes, format='audio/mp3')
         
-        # Download section
-        col1, col2 = st.columns(2)
-        with col1:
-            st.download_button(
-                label="📥 Download Podcast MP3",
-                data=st.session_state.audio_bytes,
-                file_name=st.session_state.audio_filename,
-                mime="audio/mp3",
-                key="download_audio"
-            )
-        
-        with col2:
-            if st.button("🔄 Generate New Podcast", key="reset_app"):
-                # Reset session state for new podcast
-                st.session_state.script_generated = False
-                st.session_state.audio_generated = False
-                st.session_state.generated_script = []
-                st.success("Ready for new podcast generation!")
-                st.rerun()
+        # Download button
+        st.download_button(
+            label="📥 Download Podcast MP3",
+            data=st.session_state.audio_bytes,
+            file_name=st.session_state.audio_filename,
+            mime="audio/mp3",
+            key="download_audio"
+        )
 
 def main():
     """Main application function"""
     initialize_session_state()
     render_header()
     
-    # Get API keys from secrets
-    openai_api_key, elevenlabs_api_key = get_api_keys()
-    
-    # API Status Display
-    openai_model = render_api_status(openai_api_key, elevenlabs_api_key)
+    # API Configuration
+    openai_api_key, elevenlabs_api_key, openai_model = render_api_section()
     
     # Voice Selection
     host_name, host_voice, guest_name, guest_voice = render_voice_selection()
@@ -470,21 +395,14 @@ def main():
     article_url, pause_duration, aussie_style = render_article_section()
     
     # Script Generation
-    render_script_generation(openai_model, article_url, host_name, guest_name, aussie_style)
+    render_script_generation(openai_api_key, openai_model, article_url, host_name, guest_name, aussie_style)
     
     # Audio Generation
-    render_audio_generation(host_voice, guest_voice, pause_duration)
+    render_audio_generation(elevenlabs_api_key, host_voice, guest_voice, pause_duration)
     
     # Footer
     st.markdown("---")
-    col1, col2, col3 = st.columns([1, 2, 1])
-    with col2:
-        st.markdown("""
-        <div style="text-align: center; color: #666;">
-            Built with ❤️ using Streamlit, OpenAI, and ElevenLabs<br>
-            <small>🔒 Production Ready | 🚀 Auto-Configured APIs</small>
-        </div>
-        """, unsafe_allow_html=True)
+    st.markdown("Built with ❤️ using Streamlit, OpenAI, and ElevenLabs")
 
 if __name__ == "__main__":
     main()
