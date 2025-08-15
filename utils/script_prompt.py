@@ -134,10 +134,27 @@ def validate_script_response(response_text: str) -> Dict[str, Any]:
         Exception: If response is invalid
     """
     import json
+    import re
     
     try:
+        # Clean the response text - remove markdown code blocks
+        cleaned_text = response_text.strip()
+        
+        # Remove ```json and ``` markers if present
+        if cleaned_text.startswith('```'):
+            # Find the first newline after ```json or ```
+            first_newline = cleaned_text.find('\n')
+            if first_newline != -1:
+                cleaned_text = cleaned_text[first_newline + 1:]
+        
+        if cleaned_text.endswith('```'):
+            cleaned_text = cleaned_text[:-3]
+        
+        # Remove any remaining leading/trailing whitespace
+        cleaned_text = cleaned_text.strip()
+        
         # Parse JSON response
-        parsed = json.loads(response_text)
+        parsed = json.loads(cleaned_text)
         
         # Validate structure
         if not isinstance(parsed, dict):

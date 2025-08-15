@@ -390,6 +390,7 @@ def render_script_generation(openai_model, article_url, host_name, guest_name, a
                     # Debug: Show response length and first 100 chars
                     st.write(f"Debug: Response length: {len(response_content) if response_content else 0}")
                     st.write(f"Debug: First 100 chars: {response_content[:100] if response_content else 'EMPTY RESPONSE'}...")
+                    st.write(f"Debug: Last 50 chars: ...{response_content[-50:] if response_content and len(response_content) > 50 else response_content}")
                     
                     # Check for empty response
                     if not response_content or not response_content.strip():
