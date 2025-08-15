@@ -188,45 +188,46 @@ def render_header():
     st.markdown("""
     <div class="main-header">
         <h1>🎙️ AI Podcast Generator</h1>
-        <p>Transform any article into an engaging conversational podcast</p>
-        <small>✅ Production Ready - API Keys Configured</small>
+    <p>Turn long-form articles into ready-to-record conversational podcast scripts in minutes.</p>
+    <small>Save research time • Consistent tone & style • Instant dialogue structure</small>
     </div>
     """, unsafe_allow_html=True)
 
 def render_api_status(openai_api_key, elevenlabs_api_key):
-    """Render minimal model + voice configuration (no key/status exposure)."""
-    st.markdown('<div class="section-header"><h3>⚙️ Configuration</h3></div>', unsafe_allow_html=True)
+    """Render configuration: full-width model row, full-width voice row."""
+    st.markdown('<div class="section-header"><h3>⚙️ Core Configuration</h3></div>', unsafe_allow_html=True)
 
-    col1, col2 = st.columns(2)
+    # Row 1: Model selection
+    st.markdown('<div class="info-box">', unsafe_allow_html=True)
+    openai_model = st.selectbox(
+        "Select OpenAI Model",
+        ["gpt-5", "gpt-4o", "gpt-4o-mini", "gpt-3.5-turbo"],
+        index=1 if "gpt-5" not in (st.session_state.get('selected_model') or '') else 0,
+        help="Choose the model that will convert article content into a structured, conversational script."
+    )
+    st.session_state.selected_model = openai_model
+    st.caption("Model loaded securely (keys never exposed). Higher-tier models may improve nuance.")
+    st.markdown('</div>', unsafe_allow_html=True)
 
-    with col1:
-        st.markdown('<div class="info-box">', unsafe_allow_html=True)
-        openai_model = st.selectbox(
-            "OpenAI Model",
-            ["gpt-5", "gpt-4o", "gpt-4o-mini", "gpt-3.5-turbo"],
-            index=1 if "gpt-5" not in (st.session_state.get('selected_model') or '') else 0,
-            help="Select the model for script generation (higher models may cost more)."
-        )
-        st.session_state.selected_model = openai_model
-        st.caption("Model selected. API key loaded securely from secrets.")
-        st.markdown('</div>', unsafe_allow_html=True)
-
-    with col2:
-        st.markdown('<div class="info-box">', unsafe_allow_html=True)
-        if not st.session_state.voices_loaded:
-            if st.button("🎵 Load Voices", key="load_voices"):
-                with st.spinner("Loading voices..."):
-                    try:
-                        voices = get_available_voices(elevenlabs_api_key)
-                        st.session_state.available_voices = voices
-                        st.session_state.voices_loaded = True
-                        st.success(f"Loaded {len(voices)} voices")
-                        st.rerun()
-                    except Exception as e:
-                        st.error(f"Voice load failed: {str(e)}")
-        else:
-            st.success(f"Voices loaded: {len(st.session_state.available_voices)}")
-            if st.button("🔄 Refresh Voices", key="refresh_voices"):
+    # Row 2: Voice loading
+    st.markdown('<div class="info-box" style="margin-top:0.75rem;">', unsafe_allow_html=True)
+    if not st.session_state.voices_loaded:
+        st.write("Optionally load ElevenLabs voices for later audio synthesis (if supported).")
+        if st.button("🎵 Load Voices", key="load_voices"):
+            with st.spinner("Loading voices..."):
+                try:
+                    voices = get_available_voices(elevenlabs_api_key)
+                    st.session_state.available_voices = voices
+                    st.session_state.voices_loaded = True
+                    st.success(f"Loaded {len(voices)} voices")
+                    st.rerun()
+                except Exception as e:
+                    st.error(f"Voice load failed: {str(e)}")
+    else:
+        st.success(f"Voices loaded: {len(st.session_state.available_voices)}")
+        cols = st.columns([1,1,2])
+        with cols[0]:
+            if st.button("🔄 Refresh", key="refresh_voices"):
                 with st.spinner("Refreshing voices..."):
                     try:
                         voices = get_available_voices(elevenlabs_api_key)
@@ -234,8 +235,12 @@ def render_api_status(openai_api_key, elevenlabs_api_key):
                         st.success(f"Updated: {len(voices)} voices")
                     except Exception as e:
                         st.error(f"Refresh failed: {str(e)}")
-        st.caption("Voices fetched securely via ElevenLabs API.")
-        st.markdown('</div>', unsafe_allow_html=True)
+        with cols[1]:
+            st.write(f"Default host voices: {min(3, len(st.session_state.available_voices))} shown in selector later")
+        with cols[2]:
+            st.caption("You can adjust host/guest voices in the Speaker Configuration section once loaded.")
+    st.caption("Skip this step if you only need the script.")
+    st.markdown('</div>', unsafe_allow_html=True)
 
     return openai_model
 
