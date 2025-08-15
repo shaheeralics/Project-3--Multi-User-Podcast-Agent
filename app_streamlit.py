@@ -514,22 +514,54 @@ def render_audio_generation(host_voice, guest_voice, pause_duration):
                 progress_bar = st.progress(0)
                 status_text = st.empty()
                 
-                # Generate audio with progress updates
-                audio_bytes, filename = synthesize_episode(
-                    script=st.session_state.generated_script,
-                    pause_ms=pause_duration,
-                    host_voice_id=host_voice[1],
-                    guest_voice_id=guest_voice[1],
-                    eleven_key=elevenlabs_api_key,
-                    progress_callback=lambda p, s: (
-                        progress_bar.progress(p),
-                        status_text.text(s)
+                audio_bytes = None
+                filename = None
+                format_label = "MP3"
+                mime_type = "audio/mp3"
+                playback_format = 'audio/mp3'
+
+                try:
+                    # Primary (advanced) path using pydub utilities
+                    audio_bytes, filename = synthesize_episode(
+                        script=st.session_state.generated_script,
+                        pause_ms=pause_duration,
+                        host_voice_id=host_voice[1],
+                        guest_voice_id=guest_voice[1],
+                        eleven_key=elevenlabs_api_key,
+                        progress_callback=lambda p, s: (
+                            progress_bar.progress(p),
+                            status_text.text(s)
+                        )
                     )
-                )
+                except Exception as advanced_err:
+                    # Fallback to basic WAV synthesis that doesn't rely on pydub/audioop
+                    try:
+                        from utils.audio_basic import synthesize_episode_basic, BasicAudioError
+                        status_text.text("⚙️ Falling back to basic WAV synthesis...")
+                        progress_bar.progress(10)
+                        audio_bytes, filename = synthesize_episode_basic(
+                            script=st.session_state.generated_script,
+                            host_voice_id=host_voice[1],
+                            guest_voice_id=guest_voice[1],
+                            eleven_key=elevenlabs_api_key,
+                            pause_ms=pause_duration,
+                            progress_callback=lambda p, s: (
+                                progress_bar.progress(min(90, p)),
+                                status_text.text(s)
+                            )
+                        )
+                        format_label = "WAV (basic)"
+                        mime_type = "audio/wav"
+                        playback_format = 'audio/wav'
+                    except Exception as basic_err:
+                        raise Exception(f"Advanced synthesis failed ({advanced_err}); basic fallback failed ({basic_err})")
                 
                 st.session_state.audio_generated = True
                 st.session_state.audio_bytes = audio_bytes
                 st.session_state.audio_filename = filename
+                st.session_state.audio_mime = mime_type
+                st.session_state.audio_format_label = format_label
+                st.session_state.audio_playback_format = playback_format
                 
                 progress_bar.progress(100)
                 status_text.text("✅ Audio generation complete!")
@@ -542,7 +574,7 @@ def render_audio_generation(host_voice, guest_voice, pause_duration):
                 with col1:
                     st.metric("📁 File Size", f"{audio_size_mb:.1f} MB")
                 with col2:
-                    st.metric("🎵 Format", "MP3 (192kbps)")
+                    st.metric("🎵 Format", format_label)
                 
             except Exception as e:
                 st.markdown(f'<div class="error-box">❌ Audio generation failed: {str(e)}</div>', unsafe_allow_html=True)
@@ -552,16 +584,17 @@ def render_audio_generation(host_voice, guest_voice, pause_duration):
         st.subheader("🎧 Your Podcast")
         
         # Audio player
-        st.audio(st.session_state.audio_bytes, format='audio/mp3')
+        playback_fmt = st.session_state.get('audio_playback_format', 'audio/mp3')
+        st.audio(st.session_state.audio_bytes, format=playback_fmt)
         
         # Download section
         col1, col2 = st.columns(2)
         with col1:
             st.download_button(
-                label="📥 Download Podcast MP3",
+                label=f"📥 Download Podcast {st.session_state.get('audio_format_label','Audio')}",
                 data=st.session_state.audio_bytes,
                 file_name=st.session_state.audio_filename,
-                mime="audio/mp3",
+                mime=st.session_state.get('audio_mime','audio/mp3'),
                 key="download_audio"
             )
         
