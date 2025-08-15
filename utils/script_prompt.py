@@ -120,12 +120,14 @@ The conversation should:
 
 Remember to return ONLY the JSON response with no additional text or formatting."""
 
-def validate_script_response(response_text: str) -> Dict[str, Any]:
+def validate_script_response(response_text: str, host_name: str = "Alex", guest_name: str = "Sarah") -> Dict[str, Any]:
     """
     Validate and parse OpenAI script response
     
     Args:
         response_text: Raw response from OpenAI
+        host_name: Expected host name
+        guest_name: Expected guest name
         
     Returns:
         Parsed and validated script dictionary
@@ -170,7 +172,8 @@ def validate_script_response(response_text: str) -> Dict[str, Any]:
         if len(script) == 0:
             raise Exception("Script cannot be empty")
         
-        # Validate each turn
+        # Normalize speaker names and validate each turn
+        normalized_script = []
         for i, turn in enumerate(script):
             if not isinstance(turn, dict):
                 raise Exception(f"Turn {i+1} must be an object")
@@ -178,18 +181,40 @@ def validate_script_response(response_text: str) -> Dict[str, Any]:
             if "speaker" not in turn or "text" not in turn:
                 raise Exception(f"Turn {i+1} must have 'speaker' and 'text' fields")
             
-            speaker = turn["speaker"].lower()
-            if speaker not in ["host", "guest"]:
-                raise Exception(f"Turn {i+1}: speaker must be 'host' or 'guest', got '{speaker}'")
-            
+            speaker = turn["speaker"].strip()
             text = turn["text"].strip()
+            
+            # Normalize speaker names to host/guest
+            if speaker.lower() == host_name.lower():
+                normalized_speaker = "host"
+            elif speaker.lower() == guest_name.lower():
+                normalized_speaker = "guest"
+            elif speaker.lower() in ["host"]:
+                normalized_speaker = "host"
+            elif speaker.lower() in ["guest"]:
+                normalized_speaker = "guest"
+            else:
+                # Try to guess based on common patterns
+                if any(name in speaker.lower() for name in [host_name.lower(), "host", "alex"]):
+                    normalized_speaker = "host"
+                elif any(name in speaker.lower() for name in [guest_name.lower(), "guest", "sarah"]):
+                    normalized_speaker = "guest"
+                else:
+                    raise Exception(f"Turn {i+1}: unknown speaker '{speaker}'. Expected '{host_name}' (host) or '{guest_name}' (guest)")
+            
             if not text:
                 raise Exception(f"Turn {i+1}: text cannot be empty")
             
             if len(text) < 10:
                 raise Exception(f"Turn {i+1}: text too short (minimum 10 characters)")
+            
+            normalized_script.append({
+                "speaker": normalized_speaker,
+                "text": text
+            })
         
-        return parsed
+        # Return the normalized script
+        return {"script": normalized_script}
         
     except json.JSONDecodeError as e:
         raise Exception(f"Invalid JSON response: {str(e)}")

@@ -397,7 +397,7 @@ def render_script_generation(openai_model, article_url, host_name, guest_name, a
                         raise Exception("OpenAI returned an empty response. This could be due to API limits, invalid API key, or model issues.")
                     
                     # Validate and parse the response
-                    script_content = validate_script_response(response_content)
+                    script_content = validate_script_response(response_content, host_name, guest_name)
                     st.session_state.generated_script = script_content.get("script", [])
                     st.session_state.script_generated = True
                     st.session_state.article_title = article["title"]
