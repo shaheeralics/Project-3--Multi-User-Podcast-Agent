@@ -336,11 +336,26 @@ def render_script_generation(openai_model, article_url, host_name, guest_name, a
                 try:
                     import openai
                     openai.api_key = openai_api_key
+                    
+                    # Test the API key with a simple request
+                    test_response = openai.ChatCompletion.create(
+                        model=openai_model,
+                        messages=[{"role": "user", "content": "Say 'test' as JSON: {\"test\": \"success\"}"}],
+                        max_tokens=50,
+                        temperature=0.1
+                    )
+                    st.write(f"Debug: API test successful - {len(test_response.choices[0].message.content)} chars")
+                    
                 except ImportError:
                     st.error("❌ OpenAI package not installed. Please ensure 'openai==0.28.1' is in requirements.txt")
                     st.stop()
                 except Exception as e:
-                    st.error(f"❌ Error initializing OpenAI: {str(e)}")
+                    st.error(f"❌ Error with OpenAI API: {str(e)}")
+                    st.write("This could be due to:")
+                    st.write("- Invalid API key")
+                    st.write("- Insufficient OpenAI credits")
+                    st.write("- Model not available")
+                    st.write("- Rate limiting")
                     st.stop()
                 
                 messages = build_messages(
@@ -353,24 +368,43 @@ def render_script_generation(openai_model, article_url, host_name, guest_name, a
                 
                 progress_bar.progress(80)
                 
-                response = openai.ChatCompletion.create(
-                    model=openai_model,
-                    messages=messages,
-                    temperature=0.7
-                )
+                # Debug: Show API key status
+                st.write(f"Debug: Using OpenAI API key ending in: ...{openai_api_key[-4:]}")
+                st.write(f"Debug: Model: {openai_model}")
+                st.write(f"Debug: Messages count: {len(messages)}")
                 
-                # Get the response content
-                response_content = response.choices[0].message.content
-                
-                # Debug: Show response length and first 100 chars
-                st.write(f"Debug: Response length: {len(response_content)}")
-                st.write(f"Debug: First 100 chars: {response_content[:100]}...")
-                
-                # Validate and parse the response
-                script_content = validate_script_response(response_content)
-                st.session_state.generated_script = script_content.get("script", [])
-                st.session_state.script_generated = True
-                st.session_state.article_title = article["title"]
+                try:
+                    response = openai.ChatCompletion.create(
+                        model=openai_model,
+                        messages=messages,
+                        temperature=0.7
+                    )
+                    
+                    # Debug: Show response structure
+                    st.write(f"Debug: Response type: {type(response)}")
+                    st.write(f"Debug: Response keys: {list(response.keys()) if hasattr(response, 'keys') else 'No keys'}")
+                    
+                    # Get the response content
+                    response_content = response.choices[0].message.content
+                    
+                    # Debug: Show response length and first 100 chars
+                    st.write(f"Debug: Response length: {len(response_content) if response_content else 0}")
+                    st.write(f"Debug: First 100 chars: {response_content[:100] if response_content else 'EMPTY RESPONSE'}...")
+                    
+                    # Check for empty response
+                    if not response_content or not response_content.strip():
+                        raise Exception("OpenAI returned an empty response. This could be due to API limits, invalid API key, or model issues.")
+                    
+                    # Validate and parse the response
+                    script_content = validate_script_response(response_content)
+                    st.session_state.generated_script = script_content.get("script", [])
+                    st.session_state.script_generated = True
+                    st.session_state.article_title = article["title"]
+                    
+                except Exception as api_error:
+                    st.error(f"❌ OpenAI API Error: {str(api_error)}")
+                    st.write(f"Debug: API Error type: {type(api_error)}")
+                    raise api_error
                 
                 progress_bar.progress(100)
                 status_text.text("✅ Script generation complete!")
