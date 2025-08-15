@@ -134,6 +134,40 @@ def get_api_keys():
         st.error(f"Error accessing secrets: {e}")
         st.stop()
 
+def generate_script_text_file(script_turns, article_title):
+    """
+    Generate a formatted text file from the podcast script
+    
+    Args:
+        script_turns: List of script turns with speaker and text
+        article_title: Title of the article
+    
+    Returns:
+        Formatted text content for download
+    """
+    lines = []
+    lines.append("=" * 60)
+    lines.append("PODCAST SCRIPT")
+    lines.append("=" * 60)
+    lines.append(f"Title: {article_title}")
+    lines.append(f"Generated: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
+    lines.append("=" * 60)
+    lines.append("")
+    
+    for i, turn in enumerate(script_turns, 1):
+        speaker = turn.get('speaker', 'Unknown').upper()
+        text = turn.get('text', '')
+        
+        lines.append(f"[{i:02d}] {speaker}:")
+        lines.append(f"    {text}")
+        lines.append("")
+    
+    lines.append("=" * 60)
+    lines.append("END OF SCRIPT")
+    lines.append("=" * 60)
+    
+    return "\n".join(lines)
+
 def initialize_session_state():
     """Initialize session state variables"""
     if 'voices_loaded' not in st.session_state:
@@ -369,9 +403,9 @@ def render_script_generation(openai_model, article_url, host_name, guest_name, a
                 progress_bar.progress(80)
                 
                 # Debug: Show API key status
-                st.write(f"Debug: Using OpenAI API key ending in: ...{openai_api_key[-4:]}")
-                st.write(f"Debug: Model: {openai_model}")
-                st.write(f"Debug: Messages count: {len(messages)}")
+                # st.write(f"Debug: Using OpenAI API key ending in: ...{openai_api_key[-4:]}")
+                # st.write(f"Debug: Model: {openai_model}")
+                # st.write(f"Debug: Messages count: {len(messages)}")
                 
                 try:
                     response = openai.ChatCompletion.create(
@@ -381,16 +415,16 @@ def render_script_generation(openai_model, article_url, host_name, guest_name, a
                     )
                     
                     # Debug: Show response structure
-                    st.write(f"Debug: Response type: {type(response)}")
-                    st.write(f"Debug: Response keys: {list(response.keys()) if hasattr(response, 'keys') else 'No keys'}")
+                    # st.write(f"Debug: Response type: {type(response)}")
+                    # st.write(f"Debug: Response keys: {list(response.keys()) if hasattr(response, 'keys') else 'No keys'}")
                     
                     # Get the response content
                     response_content = response.choices[0].message.content
                     
                     # Debug: Show response length and first 100 chars
-                    st.write(f"Debug: Response length: {len(response_content) if response_content else 0}")
-                    st.write(f"Debug: First 100 chars: {response_content[:100] if response_content else 'EMPTY RESPONSE'}...")
-                    st.write(f"Debug: Last 50 chars: ...{response_content[-50:] if response_content and len(response_content) > 50 else response_content}")
+                    # st.write(f"Debug: Response length: {len(response_content) if response_content else 0}")
+                    # st.write(f"Debug: First 100 chars: {response_content[:100] if response_content else 'EMPTY RESPONSE'}...")
+                    # st.write(f"Debug: Last 50 chars: ...{response_content[-50:] if response_content and len(response_content) > 50 else response_content}")
                     
                     # Check for empty response
                     if not response_content or not response_content.strip():
@@ -404,7 +438,7 @@ def render_script_generation(openai_model, article_url, host_name, guest_name, a
                     
                 except Exception as api_error:
                     st.error(f"❌ OpenAI API Error: {str(api_error)}")
-                    st.write(f"Debug: API Error type: {type(api_error)}")
+                    # st.write(f"Debug: API Error type: {type(api_error)}")
                     raise api_error
                 
                 progress_bar.progress(100)
@@ -451,10 +485,22 @@ def render_audio_generation(host_voice, guest_voice, pause_duration):
     st.markdown('<div class="section-header"><h3>🎵 Audio Generation</h3></div>', unsafe_allow_html=True)
     
     # Check if audio synthesis is available
-    from utils.audio_streamlit import test_audio_setup, get_audio_error
-    if not test_audio_setup():
-        st.warning(f"⚠️ Audio synthesis not available: {get_audio_error()}")
+    if not _AUDIO_AVAILABLE:
+        st.warning(f"⚠️ {_AUDIO_ERROR}")
         st.info("💡 The app will generate a downloadable script text file instead of audio.")
+        
+        # Provide script download option
+        if st.button("📄 Generate Script Text File", key="generate_script_file"):
+            script_text = generate_script_text_file(st.session_state.generated_script, st.session_state.article_title)
+            st.download_button(
+                label="📥 Download Script as Text File",
+                data=script_text,
+                file_name=f"podcast_script_{st.session_state.article_title.replace(' ', '_')[:50]}.txt",
+                mime="text/plain",
+                key="download_script"
+            )
+            st.success("✅ Script text file generated! Click the download button above.")
+        return
     
     if not all([host_voice, guest_voice]):
         st.warning("⚠️ Please configure voices and load them first")
