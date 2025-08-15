@@ -311,9 +311,16 @@ def render_script_generation(openai_model, article_url, host_name, guest_name, a
                 
                 openai_api_key, _ = get_api_keys()
                 
-                # Import OpenAI here to avoid issues if not installed
-                from openai import OpenAI
-                client = OpenAI(api_key=openai_api_key)
+                # Import OpenAI with error handling
+                try:
+                    from openai import OpenAI
+                    client = OpenAI(api_key=openai_api_key)
+                except ImportError:
+                    st.error("❌ OpenAI package not installed. Please ensure 'openai>=1.30.0' is in requirements.txt")
+                    st.stop()
+                except Exception as e:
+                    st.error(f"❌ Error initializing OpenAI client: {str(e)}")
+                    st.stop()
                 
                 messages = build_messages(
                     article_title=article["title"],
@@ -452,8 +459,37 @@ def render_audio_generation(host_voice, guest_voice, pause_duration):
                 st.success("Ready for new podcast generation!")
                 st.rerun()
 
+def check_dependencies():
+    """Check if all required dependencies are available"""
+    missing_deps = []
+    
+    # Check OpenAI
+    try:
+        import openai
+    except ImportError:
+        missing_deps.append("openai")
+    
+    # Check requests
+    try:
+        import requests
+    except ImportError:
+        missing_deps.append("requests")
+    
+    if missing_deps:
+        st.error(f"❌ Missing required packages: {', '.join(missing_deps)}")
+        st.error("Please ensure these packages are listed in requirements.txt:")
+        for dep in missing_deps:
+            if dep == "openai":
+                st.code("openai>=1.30.0")
+            else:
+                st.code(dep)
+        st.stop()
+
 def main():
     """Main application function"""
+    # Check dependencies first
+    check_dependencies()
+    
     initialize_session_state()
     render_header()
     
