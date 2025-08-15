@@ -550,9 +550,14 @@ def render_audio_generation(host_voice, guest_voice, pause_duration):
                                 status_text.text(s)
                             )
                         )
-                        format_label = "WAV (basic)"
-                        mime_type = "audio/wav"
-                        playback_format = 'audio/wav'
+                        if filename.lower().endswith('.mp3'):
+                            format_label = "MP3 (basic concat)"
+                            mime_type = "audio/mp3"
+                            playback_format = 'audio/mp3'
+                        else:
+                            format_label = "WAV (basic)"
+                            mime_type = "audio/wav"
+                            playback_format = 'audio/wav'
                     except Exception as basic_err:
                         raise Exception(f"Advanced synthesis failed ({advanced_err}); basic fallback failed ({basic_err})")
                 
