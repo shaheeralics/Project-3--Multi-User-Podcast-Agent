@@ -59,6 +59,7 @@ st.markdown("""
         border-left: 4px solid #667eea;
         margin: 1rem 0;
         border-radius: 5px;
+        color: #222 !important;
     }
     
     .api-section {
