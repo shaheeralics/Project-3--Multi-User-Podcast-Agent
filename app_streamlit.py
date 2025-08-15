@@ -15,7 +15,7 @@ import base64
 
 # Import utility modules
 from utils.scrape import scrape_and_clean
-from utils.script_prompt import build_messages
+from utils.script_prompt import build_messages, validate_script_response
 
 # Try to import audio modules with graceful fallback
 _AUDIO_AVAILABLE = True
@@ -359,7 +359,15 @@ def render_script_generation(openai_model, article_url, host_name, guest_name, a
                     temperature=0.7
                 )
                 
-                script_content = json.loads(response.choices[0].message.content)
+                # Get the response content
+                response_content = response.choices[0].message.content
+                
+                # Debug: Show response length and first 100 chars
+                st.write(f"Debug: Response length: {len(response_content)}")
+                st.write(f"Debug: First 100 chars: {response_content[:100]}...")
+                
+                # Validate and parse the response
+                script_content = validate_script_response(response_content)
                 st.session_state.generated_script = script_content.get("script", [])
                 st.session_state.script_generated = True
                 st.session_state.article_title = article["title"]
