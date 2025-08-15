@@ -248,6 +248,86 @@ def synthesize_episode(
         progress_callback(100, f"Audio synthesis complete! Generated {len(audio_bytes)} bytes")
     
     return audio_bytes, filename
+    
+    if not script:
+        raise Exception("No script provided for audio synthesis")
+    
+    # Initialize progress
+    total_turns = len(script)
+    if progress_callback:
+        progress_callback(0, "Starting audio synthesis...")
+    
+    # Create silence for pauses
+    pause_audio = Silence(duration=max(0, pause_ms))
+    
+    # Initialize the final audio track
+    final_audio = AudioSegment.empty()
+    
+    # Process each turn in the script
+    for i, turn in enumerate(script):
+        speaker = turn.get("speaker", "").lower()
+        text = turn.get("text", "").strip()
+        
+        if not text:
+            continue
+        
+        # Determine voice ID based on speaker
+        voice_id = host_voice_id if speaker == "host" else guest_voice_id
+        
+        # Update progress
+        progress_percent = int((i / total_turns) * 90)  # Reserve 10% for final processing
+        speaker_name = "Host" if speaker == "host" else "Guest"
+        
+        if progress_callback:
+            progress_callback(progress_percent, f"Synthesizing {speaker_name} line {i+1}/{total_turns}...")
+        
+        try:
+            # Synthesize the audio for this line
+            audio_data = _synthesize_single_line(text, voice_id, eleven_key)
+            
+            # Convert to AudioSegment
+            audio_segment = AudioSegment.from_file(BytesIO(audio_data), format="mp3")
+            
+            # Add to final audio with pause
+            final_audio += audio_segment
+            
+            # Add pause after each line (except the last one)
+            if i < total_turns - 1:
+                final_audio += pause_audio
+            
+            # Rate limiting to avoid API limits
+            time.sleep(0.3)
+            
+        except Exception as e:
+            error_msg = f"Failed to synthesize line {i+1}: {str(e)}"
+            if progress_callback:
+                progress_callback(progress_percent, error_msg)
+            raise Exception(error_msg)
+    
+    # Final processing
+    if progress_callback:
+        progress_callback(95, "Finalizing audio file...")
+    
+    # Export to MP3
+    output_buffer = BytesIO()
+    final_audio.export(
+        output_buffer,
+        format="mp3",
+        bitrate="192k",
+        parameters=["-ar", "44100"]  # Ensure consistent sample rate
+    )
+    output_buffer.seek(0)
+    
+    # Generate filename with timestamp
+    timestamp = time.strftime("%Y%m%d_%H%M%S")
+    filename = f"podcast_episode_{timestamp}.mp3"
+    
+    audio_bytes = output_buffer.read()
+    
+    if progress_callback:
+        progress_callback(100, f"Audio synthesis complete! Generated {len(audio_bytes)} bytes")
+    
+    return audio_bytes, filename
 
 def test_audio_setup() -> bool:
     """

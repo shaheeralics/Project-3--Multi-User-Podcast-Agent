@@ -311,15 +311,15 @@ def render_script_generation(openai_model, article_url, host_name, guest_name, a
                 
                 openai_api_key, _ = get_api_keys()
                 
-                # Import OpenAI with error handling
+                # Import OpenAI with error handling - using older version for compatibility
                 try:
-                    from openai import OpenAI
-                    client = OpenAI(api_key=openai_api_key)
+                    import openai
+                    openai.api_key = openai_api_key
                 except ImportError:
-                    st.error("❌ OpenAI package not installed. Please ensure 'openai>=1.30.0' is in requirements.txt")
+                    st.error("❌ OpenAI package not installed. Please ensure 'openai==0.28.1' is in requirements.txt")
                     st.stop()
                 except Exception as e:
-                    st.error(f"❌ Error initializing OpenAI client: {str(e)}")
+                    st.error(f"❌ Error initializing OpenAI: {str(e)}")
                     st.stop()
                 
                 messages = build_messages(
@@ -332,11 +332,10 @@ def render_script_generation(openai_model, article_url, host_name, guest_name, a
                 
                 progress_bar.progress(80)
                 
-                response = client.chat.completions.create(
+                response = openai.ChatCompletion.create(
                     model=openai_model,
                     messages=messages,
-                    temperature=0.7,
-                    response_format={"type": "json_object"}
+                    temperature=0.7
                 )
                 
                 script_content = json.loads(response.choices[0].message.content)
@@ -386,6 +385,12 @@ def render_audio_generation(host_voice, guest_voice, pause_duration):
         return
     
     st.markdown('<div class="section-header"><h3>🎵 Audio Generation</h3></div>', unsafe_allow_html=True)
+    
+    # Check if audio synthesis is available
+    from utils.audio_streamlit import test_audio_setup, get_audio_error
+    if not test_audio_setup():
+        st.warning(f"⚠️ Audio synthesis not available: {get_audio_error()}")
+        st.info("💡 The app will generate a downloadable script text file instead of audio.")
     
     if not all([host_voice, guest_voice]):
         st.warning("⚠️ Please configure voices and load them first")
@@ -466,6 +471,9 @@ def check_dependencies():
     # Check OpenAI
     try:
         import openai
+        # Test if it's the older version we need
+        if not hasattr(openai, 'ChatCompletion'):
+            missing_deps.append("openai (need version 0.28.1)")
     except ImportError:
         missing_deps.append("openai")
     
@@ -479,8 +487,8 @@ def check_dependencies():
         st.error(f"❌ Missing required packages: {', '.join(missing_deps)}")
         st.error("Please ensure these packages are listed in requirements.txt:")
         for dep in missing_deps:
-            if dep == "openai":
-                st.code("openai>=1.30.0")
+            if "openai" in dep:
+                st.code("openai==0.28.1")
             else:
                 st.code(dep)
         st.stop()
