@@ -5,7 +5,6 @@ readability-lxml
 beautifulsoup4
 lxml
 pydub
+pyaudioop-compat
 python-dotenv
 openai==0.28.1
-beautifulsoup4
-lxml
