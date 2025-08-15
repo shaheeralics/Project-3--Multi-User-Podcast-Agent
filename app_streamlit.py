@@ -16,7 +16,22 @@ import base64
 # Import utility modules
 from utils.scrape import scrape_and_clean
 from utils.script_prompt import build_messages
-from utils.audio_streamlit import synthesize_episode, get_available_voices, preview_voice
+
+# Try to import audio modules with graceful fallback
+_AUDIO_AVAILABLE = True
+_AUDIO_ERROR = ""
+try:
+    from utils.audio_streamlit import synthesize_episode, get_available_voices, preview_voice
+except Exception as e:
+    _AUDIO_AVAILABLE = False
+    _AUDIO_ERROR = str(e)
+    # Define dummy functions to prevent import errors
+    def synthesize_episode(*args, **kwargs):
+        raise Exception(f"Audio synthesis not available: {_AUDIO_ERROR}")
+    def get_available_voices(*args, **kwargs):
+        return []
+    def preview_voice(*args, **kwargs):
+        return None
 
 # Page configuration
 st.set_page_config(
@@ -188,6 +203,12 @@ def render_api_status(openai_api_key, elevenlabs_api_key):
 
 def render_voice_selection():
     """Render voice selection interface"""
+    # Check if audio is available
+    if not _AUDIO_AVAILABLE:
+        st.markdown(f'<div class="error-box">⚠️ {_AUDIO_ERROR}</div>', unsafe_allow_html=True)
+        st.markdown('<div class="info-box">Audio synthesis features are currently unavailable. Script generation will still work.</div>', unsafe_allow_html=True)
+        return None, None, None, None
+    
     if not st.session_state.voices_loaded:
         st.markdown('<div class="info-box">🎵 Please load voices first to configure podcast speakers</div>', unsafe_allow_html=True)
         return None, None, None, None

@@ -11,12 +11,20 @@ import streamlit as st
 
 # Check for audio dependencies
 _AUDIO_DISABLED = False
+_AUDIO_IMPORT_ERROR = ""
 try:
+    # Try to import audioop first (missing in Python 3.13+)
+    try:
+        import audioop
+    except ImportError:
+        # audioop not available, pydub will have limited functionality
+        pass
+    
     from pydub import AudioSegment
     from pydub.generators import Silence
 except Exception as e:
     _AUDIO_DISABLED = True
-    _AUDIO_IMPORT_ERROR = str(e)
+    _AUDIO_IMPORT_ERROR = f"Audio synthesis not available: {str(e)}"
 
 def get_available_voices(elevenlabs_api_key: str) -> List[Dict]:
     """
