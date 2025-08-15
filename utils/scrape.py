@@ -72,7 +72,7 @@ def scrape_and_clean(url: str) -> Dict[str, str]:
         )
         
         # Step 3: Extract title using trafilatura
-        title = trafilatura.extract_metadata(response.text, fast=True)
+        title = trafilatura.extract_metadata(response.text)
         article_title = ""
         
         if title and hasattr(title, 'title') and title.title:
