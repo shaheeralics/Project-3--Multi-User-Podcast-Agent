@@ -30,7 +30,8 @@ def scrape_and_clean(url: str) -> Dict[str, str]:
         Exception: If scraping fails or dependencies are missing
     """
     if not SCRAPING_AVAILABLE:
-        raise Exception("Scraping dependencies not available. Please install trafilatura and readability-lxml.")
+        # Fallback to basic HTML parsing if advanced libraries aren't available
+        return _basic_scrape_and_clean(url)
     
     if not url or not url.strip():
         raise Exception("URL cannot be empty")
@@ -240,3 +241,126 @@ def get_scraping_error() -> Optional[str]:
         Error message if scraping is disabled, None otherwise
     """
     return None if SCRAPING_AVAILABLE else "Missing dependencies: trafilatura, readability-lxml"
+
+def _basic_scrape_and_clean(url: str) -> Dict[str, str]:
+    """
+    Basic fallback scraping using only standard libraries and requests
+    
+    Args:
+        url: URL of the article to scrape
+        
+    Returns:
+        Dictionary with 'title' and 'text' keys containing cleaned content
+    """
+    import re
+    from urllib.parse import urlparse
+    
+    if not url or not url.strip():
+        raise Exception("URL cannot be empty")
+    
+    # Validate URL format
+    try:
+        parsed = urlparse(url.strip())
+        if not parsed.scheme or not parsed.netloc:
+            raise Exception("Invalid URL format")
+    except Exception:
+        raise Exception("Invalid URL format")
+    
+    try:
+        # Fetch the webpage
+        headers = {
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
+            'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
+            'Accept-Language': 'en-US,en;q=0.5',
+            'Connection': 'keep-alive',
+        }
+        
+        response = requests.get(url.strip(), headers=headers, timeout=30)
+        response.raise_for_status()
+        html_content = response.text
+        
+        # Extract title using basic regex
+        title_match = re.search(r'<title[^>]*>([^<]+)</title>', html_content, re.IGNORECASE)
+        title = title_match.group(1).strip() if title_match else "Untitled Article"
+        
+        # Basic content extraction using regex patterns
+        # Remove script and style tags
+        html_content = re.sub(r'<script[^>]*>.*?</script>', '', html_content, flags=re.DOTALL | re.IGNORECASE)
+        html_content = re.sub(r'<style[^>]*>.*?</style>', '', html_content, flags=re.DOTALL | re.IGNORECASE)
+        
+        # Look for article content in common containers
+        content_patterns = [
+            r'<article[^>]*>(.*?)</article>',
+            r'<div[^>]*class=["\'].*?(?:content|article|post|entry|main)[^"\']*["\'][^>]*>(.*?)</div>',
+            r'<main[^>]*>(.*?)</main>',
+            r'<div[^>]*id=["\'].*?(?:content|article|post|entry|main)[^"\']*["\'][^>]*>(.*?)</div>',
+        ]
+        
+        extracted_content = ""
+        for pattern in content_patterns:
+            matches = re.findall(pattern, html_content, re.DOTALL | re.IGNORECASE)
+            if matches:
+                # Take the longest match
+                extracted_content = max(matches, key=len)
+                break
+        
+        # If no specific content container found, extract from body
+        if not extracted_content:
+            body_match = re.search(r'<body[^>]*>(.*?)</body>', html_content, re.DOTALL | re.IGNORECASE)
+            if body_match:
+                extracted_content = body_match.group(1)
+            else:
+                extracted_content = html_content
+        
+        # Clean HTML tags
+        text = re.sub(r'<[^>]+>', ' ', extracted_content)
+        
+        # Decode HTML entities
+        html_entities = {
+            '&amp;': '&', '&lt;': '<', '&gt;': '>', '&quot;': '"', '&#39;': "'",
+            '&nbsp;': ' ', '&copy;': '©', '&reg;': '®', '&trade;': '™',
+            '&hellip;': '...', '&mdash;': '—', '&ndash;': '–', '&ldquo;': '"',
+            '&rdquo;': '"', '&lsquo;': "'", '&rsquo;': "'", '&bull;': '•'
+        }
+        
+        for entity, char in html_entities.items():
+            text = text.replace(entity, char)
+        
+        # Basic cleaning
+        text = re.sub(r'\s+', ' ', text)  # Normalize whitespace
+        text = re.sub(r'^\s+|\s+$', '', text)  # Strip leading/trailing whitespace
+        
+        # Remove common navigation/footer patterns
+        noise_patterns = [
+            r'(?i)(?:subscribe|follow us|share|related articles|advertisement|cookie policy|privacy policy).*?(?:\n|$)',
+            r'(?i)(?:click here|sign up|you might also like).*?(?:\n|$)',
+            r'https?://[^\s]+',  # Remove URLs
+            r'\S+@\S+',  # Remove emails
+        ]
+        
+        for pattern in noise_patterns:
+            text = re.sub(pattern, ' ', text)
+        
+        # Final cleanup
+        text = re.sub(r'\s+', ' ', text).strip()
+        
+        # Ensure we have meaningful content
+        if len(text) < 100:
+            raise Exception("Could not extract meaningful content from the article. The page might require JavaScript or have anti-scraping measures.")
+        
+        # Clean title
+        title = _clean_title(title)
+        text = _clean_extracted_text(text)
+        
+        return {
+            "title": title,
+            "text": text,
+            "url": url
+        }
+        
+    except requests.exceptions.RequestException as e:
+        raise Exception(f"Failed to fetch webpage: {str(e)}")
+    except Exception as e:
+        if "Could not extract" in str(e) or "Failed to fetch" in str(e):
+            raise e
+        raise Exception(f"Error processing article: {str(e)}")
