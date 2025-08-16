@@ -55,12 +55,13 @@ st.markdown("""
     }
     
     .section-header {
-        background: #f8f9fa;
+        background: linear-gradient(135deg, #00c9a7 0%, #ff6a88 100%);
         padding: 1rem;
-        border-left: 4px solid #667eea;
+        border-radius: 10px;
         margin: 1rem 0;
-        border-radius: 5px;
-        color: #222 !important;
+        color: white !important;
+        border: none;
+        box-shadow: 0 2px 10px rgba(0,201,167,0.15);
     }
     
     .api-section {
