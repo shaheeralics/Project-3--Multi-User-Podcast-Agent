@@ -272,10 +272,34 @@ def initialize_session_state():
 def render_header():
     """Render the main application header"""
     st.markdown("""
-    <div class="main-header">
-        <h1>Podcast GPT</h1>
-        <p>Transform articles into professional, conversational podcasts with AI.</p>
+    <div style="text-align: center; margin: 2rem 0 3rem 0;">
+        <h1 style="
+            font-size: 3.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #00ffff 0%, #ff00ff 50%, #ffff00 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-family: 'Space Grotesk', sans-serif;
+            letter-spacing: 2px;
+            margin-bottom: 0.5rem;
+            text-shadow: 0 0 40px rgba(0,255,255,0.3);
+            animation: glow-pulse 2s ease-in-out infinite alternate;
+        ">NEURAL PODCAST</h1>
+        <p style="
+            font-size: 1.2rem;
+            color: #a0a0ff;
+            font-weight: 400;
+            letter-spacing: 1px;
+            margin: 0;
+            text-shadow: 0 0 10px rgba(160,160,255,0.5);
+        ">AI-Powered Audio Generation System</p>
     </div>
+    <style>
+        @keyframes glow-pulse {
+            from { text-shadow: 0 0 40px rgba(0,255,255,0.3); }
+            to { text-shadow: 0 0 60px rgba(0,255,255,0.6), 0 0 80px rgba(255,0,255,0.3); }
+        }
+    </style>
     """, unsafe_allow_html=True)
 
 def render_api_status(openai_api_key, elevenlabs_api_key):
