@@ -50,46 +50,46 @@ st.markdown("""
     }
     .main-header {
         background: none;
-        padding: 2rem 0 1rem 0;
+        padding: 1.2rem 0 0.5rem 0;
         text-align: center;
         color: #222;
-        margin-bottom: 1.2rem;
-        border-bottom: 2px solid #eee;
+        margin-bottom: 0.5rem;
+        border-bottom: 1px solid #eee;
         letter-spacing: 0.5px;
     }
     .main-header h1 {
-        font-size: 2.2rem;
+        font-size: 1.4rem;
         font-weight: 800;
-        margin-bottom: 0.5rem;
+        margin-bottom: 0.2rem;
         letter-spacing: 1px;
     }
     .main-header p {
-        font-size: 1.05rem;
+        font-size: 0.9rem;
         font-weight: 400;
-        margin-bottom: 0.2rem;
+        margin-bottom: 0.1rem;
         color: #555;
     }
     .core-config {
         display: flex;
-        flex-wrap: wrap;
-        gap: 2rem;
-        justify-content: center;
+        flex-wrap: nowrap;
+        gap: 0.7rem;
+        justify-content: flex-start;
         align-items: flex-start;
-        margin-bottom: 2rem;
-        padding: 1rem 0 0.5rem 0;
+        margin-bottom: 0.7rem;
+        padding: 0.2rem 0 0.2rem 0;
         border-bottom: 1px solid #eee;
     }
     .core-config > div {
-        min-width: 220px;
-        max-width: 320px;
-        flex: 1 1 220px;
+        min-width: 140px;
+        max-width: 180px;
+        flex: 1 1 140px;
     }
     .section-header {
         background: none;
         color: #222;
-        font-size: 1.15rem;
+        font-size: 1rem;
         font-weight: 700;
-        margin: 2rem 0 0.5rem 0;
+        margin: 1.2rem 0 0.2rem 0;
         padding: 0;
         border: none;
         letter-spacing: 0.5px;
@@ -99,10 +99,10 @@ st.markdown("""
         background: #222;
         color: #fff;
         border: none;
-        border-radius: 3px;
-        padding: 0.5rem 2rem;
+        border-radius: 2px;
+        padding: 0.3rem 1.2rem;
         font-weight: 600;
-        font-size: 1rem;
+        font-size: 0.9rem;
         transition: all 0.2s ease;
         box-shadow: none;
     }
@@ -115,17 +115,18 @@ st.markdown("""
         background: #f8f9fa;
         border-radius: 2px;
         color: #222;
-        padding: 1rem;
-        margin: 1rem 0;
+        padding: 0.7rem;
+        margin: 0.7rem 0;
         font-weight: 500;
         box-shadow: none;
         border: 1px solid #eee;
+        font-size: 0.95rem;
     }
     .success-box {
-        border-left: 3px solid #00c9a7;
+        border-left: 2px solid #00c9a7;
     }
     .error-box {
-        border-left: 3px solid #ff6a88;
+        border-left: 2px solid #ff6a88;
     }
 </style>
 """, unsafe_allow_html=True)
