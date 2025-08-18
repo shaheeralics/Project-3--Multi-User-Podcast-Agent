@@ -47,260 +47,112 @@ st.markdown("""
 <style>
     @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap');
     
-    /* 2035 Futuristic Neural Theme */
+    /* 2035 Futuristic Theme */
     .stApp {
-        background: radial-gradient(circle at 20% 80%, #120458 0%, #000000 50%), 
-                    radial-gradient(circle at 80% 20%, #270082 0%, #000000 50%),
-                    linear-gradient(135deg, #0a0a0a 0%, #1a0033 100%);
-        color: #e0e0ff;
-        position: relative;
-    }
-    
-    .stApp::before {
-        content: "";
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: 
-            radial-gradient(2px 2px at 20px 30px, #00ffff, transparent),
-            radial-gradient(2px 2px at 40px 70px, #ff00ff, transparent),
-            radial-gradient(1px 1px at 90px 40px, #00ff00, transparent),
-            radial-gradient(1px 1px at 130px 80px, #ffff00, transparent);
-        background-repeat: repeat;
-        background-size: 200px 200px;
-        opacity: 0.1;
-        pointer-events: none;
-        animation: neural-pulse 8s infinite ease-in-out;
-    }
-    
-    @keyframes neural-pulse {
-        0%, 100% { opacity: 0.1; }
-        50% { opacity: 0.2; }
-    }
-    
-    body, .main-header, .section-header {
-        font-family: 'Space Grotesk', sans-serif;
+        background: linear-gradient(135deg, #0a0a2e 0%, #1a1a4e 50%, #2a2a6e 100%);
         color: #e0e0ff;
     }
     
+    /* Main header styling */
     .main-header {
-        background: linear-gradient(135deg, 
-            rgba(0,255,255,0.1) 0%, 
-            rgba(128,0,255,0.1) 50%, 
-            rgba(255,0,128,0.1) 100%);
-        backdrop-filter: blur(20px);
+        background: linear-gradient(135deg, rgba(0,255,255,0.1) 0%, rgba(128,0,255,0.1) 100%);
         border: 1px solid rgba(0,255,255,0.3);
-        padding: 2.5rem 0 2rem 0;
+        padding: 2rem;
         text-align: center;
         margin-bottom: 2rem;
-        border-radius: 20px;
-        box-shadow: 
-            0 8px 32px rgba(0,255,255,0.2),
-            inset 0 1px 0 rgba(255,255,255,0.1);
-        position: relative;
-        overflow: hidden;
-    }
-    
-    .main-header::before {
-        content: "";
-        position: absolute;
-        top: 0;
-        left: -100%;
-        width: 100%;
-        height: 100%;
-        background: linear-gradient(90deg, 
-            transparent, 
-            rgba(0,255,255,0.1), 
-            transparent);
-        animation: hologram-scan 3s infinite;
-    }
-    
-    @keyframes hologram-scan {
-        0% { left: -100%; }
-        100% { left: 100%; }
+        border-radius: 15px;
+        backdrop-filter: blur(10px);
     }
     
     .main-header h1 {
-        font-size: 2.8rem;
+        font-size: 2.5rem;
         font-weight: 600;
-        margin-bottom: 0.5rem;
-        background: linear-gradient(135deg, #00ffff 0%, #ff00ff 50%, #ffff00 100%);
+        background: linear-gradient(135deg, #00ffff 0%, #ff00ff 100%);
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
-        background-clip: text;
         font-family: 'Space Grotesk', sans-serif;
-        letter-spacing: 1px;
-        text-shadow: 0 0 30px rgba(0,255,255,0.5);
     }
     
     .main-header p {
-        font-size: 1.1rem;
-        font-weight: 400;
         color: #a0a0ff;
-        text-shadow: 0 0 10px rgba(160,160,255,0.5);
+        font-size: 1.1rem;
     }
     
+    /* Section headers */
     .section-header {
-        background: linear-gradient(135deg, 
-            rgba(0,255,255,0.05) 0%, 
-            rgba(128,0,255,0.05) 100%);
-        backdrop-filter: blur(10px);
+        background: rgba(0,255,255,0.1);
         color: #00ffff;
-        font-size: 1.2rem;
-        font-weight: 600;
-        margin: 2rem 0 1.5rem 0;
         padding: 1rem 1.5rem;
         border: 1px solid rgba(0,255,255,0.3);
-        border-radius: 15px;
-        letter-spacing: 0.5px;
-        box-shadow: 
-            0 4px 20px rgba(0,255,255,0.2),
-            inset 0 1px 0 rgba(255,255,255,0.1);
-        text-shadow: 0 0 10px rgba(0,255,255,0.8);
+        border-radius: 10px;
+        margin: 1.5rem 0;
+        font-weight: 600;
+        backdrop-filter: blur(5px);
     }
     
-    /* Neural Network Inputs */
+    /* Input styling */
     .stTextInput > div > div > input {
-        background: rgba(20,20,40,0.8);
-        backdrop-filter: blur(10px);
-        border: 1px solid rgba(0,255,255,0.3);
-        border-radius: 12px;
-        color: #e0e0ff;
-        padding: 1rem;
-        box-shadow: 
-            0 4px 20px rgba(0,255,255,0.1),
-            inset 0 1px 0 rgba(255,255,255,0.1);
-        transition: all 0.3s ease;
+        background: rgba(20,20,60,0.8) !important;
+        border: 1px solid rgba(0,255,255,0.3) !important;
+        border-radius: 8px !important;
+        color: #e0e0ff !important;
     }
     
     .stTextInput > div > div > input:focus {
-        border-color: #00ffff;
-        box-shadow: 
-            0 0 20px rgba(0,255,255,0.4),
-            0 4px 20px rgba(0,255,255,0.2);
-        transform: translateY(-2px);
+        border-color: #00ffff !important;
+        box-shadow: 0 0 10px rgba(0,255,255,0.3) !important;
     }
     
-    .stSelectbox > div > div {
-        background: rgba(20,20,40,0.8);
-        backdrop-filter: blur(10px);
-        border: 1px solid rgba(0,255,255,0.3);
-        border-radius: 12px;
-        color: #e0e0ff;
-        box-shadow: 
-            0 4px 20px rgba(0,255,255,0.1),
-            inset 0 1px 0 rgba(255,255,255,0.1);
-    }
-    
-    /* Quantum Buttons */
+    /* Button styling */
     .stButton > button {
-        background: linear-gradient(135deg, 
-            rgba(0,255,255,0.2) 0%, 
-            rgba(128,0,255,0.2) 50%,
-            rgba(255,0,128,0.2) 100%);
-        backdrop-filter: blur(15px);
-        color: #ffffff;
-        border: 1px solid rgba(0,255,255,0.5);
-        border-radius: 12px;
-        padding: 0.8rem 1.6rem;
-        font-weight: 600;
-        font-size: 1rem;
-        font-family: 'Space Grotesk', sans-serif;
-        transition: all 0.3s ease;
-        box-shadow: 
-            0 4px 20px rgba(0,255,255,0.3),
-            inset 0 1px 0 rgba(255,255,255,0.2);
-        text-shadow: 0 0 10px rgba(255,255,255,0.8);
-        letter-spacing: 0.5px;
-        position: relative;
-        overflow: hidden;
-    }
-    
-    .stButton > button::before {
-        content: "";
-        position: absolute;
-        top: 0;
-        left: -100%;
-        width: 100%;
-        height: 100%;
-        background: linear-gradient(90deg, 
-            transparent, 
-            rgba(255,255,255,0.2), 
-            transparent);
-        transition: all 0.5s;
-    }
-    
-    .stButton > button:hover::before {
-        left: 100%;
+        background: linear-gradient(135deg, rgba(0,255,255,0.2) 0%, rgba(128,0,255,0.2) 100%) !important;
+        color: #ffffff !important;
+        border: 1px solid rgba(0,255,255,0.5) !important;
+        border-radius: 8px !important;
+        font-weight: 600 !important;
+        backdrop-filter: blur(10px) !important;
     }
     
     .stButton > button:hover {
-        transform: translateY(-3px);
-        box-shadow: 
-            0 8px 30px rgba(0,255,255,0.4),
-            0 0 40px rgba(0,255,255,0.3);
-        border-color: #00ffff;
+        border-color: #00ffff !important;
+        box-shadow: 0 0 15px rgba(0,255,255,0.4) !important;
     }
     
-    /* Holographic success/error boxes */
-    .success-box, .error-box {
-        backdrop-filter: blur(20px);
-        border-radius: 12px;
-        padding: 1.2rem;
-        margin: 1.5rem 0;
-        font-weight: 500;
-        border: 1px solid;
-        position: relative;
-        overflow: hidden;
+    /* Selectbox styling */
+    .stSelectbox > div > div > div {
+        background: rgba(20,20,60,0.8) !important;
+        color: #e0e0ff !important;
+        border: 1px solid rgba(0,255,255,0.3) !important;
     }
     
+    /* Text color fixes */
+    .stApp * {
+        color: #e0e0ff;
+    }
+    
+    /* Labels */
+    label {
+        color: #a0a0ff !important;
+        font-weight: 500 !important;
+    }
+    
+    /* Success/Error boxes */
     .success-box {
         background: rgba(0,255,128,0.1);
-        border-color: rgba(0,255,128,0.5);
+        border: 1px solid rgba(0,255,128,0.5);
         color: #00ff80;
-        box-shadow: 0 8px 32px rgba(0,255,128,0.2);
-        text-shadow: 0 0 10px rgba(0,255,128,0.5);
+        padding: 1rem;
+        border-radius: 8px;
+        margin: 1rem 0;
     }
     
     .error-box {
         background: rgba(255,0,128,0.1);
-        border-color: rgba(255,0,128,0.5);
+        border: 1px solid rgba(255,0,128,0.5);
         color: #ff0080;
-        box-shadow: 0 8px 32px rgba(255,0,128,0.2);
-        text-shadow: 0 0 10px rgba(255,0,128,0.5);
-    }
-    
-    /* Neural text styling */
-    .stApp, .stApp > div, .stApp p, .stApp span, .stApp label {
-        color: #e0e0ff !important;
-    }
-    
-    .stTextInput label, .stSelectbox label, .stSlider label, .stCheckbox label {
-        color: #a0a0ff !important;
-        font-weight: 500 !important;
-        text-shadow: 0 0 5px rgba(160,160,255,0.5) !important;
-    }
-    
-    .stSelectbox > div > div > div {
-        background: rgba(20,20,40,0.9) !important;
-        color: #e0e0ff !important;
-    }
-    
-    h1, h2, h3, h4, h5, h6, p, span, div, label {
-        color: #e0e0ff !important;
-    }
-    
-    /* Quantum Expander */
-    .streamlit-expanderHeader {
-        background: rgba(20,20,40,0.8) !important;
-        backdrop-filter: blur(10px) !important;
-        color: #00ffff !important;
-        border: 1px solid rgba(0,255,255,0.3) !important;
-        border-radius: 12px !important;
-        box-shadow: 0 4px 20px rgba(0,255,255,0.1) !important;
-        text-shadow: 0 0 10px rgba(0,255,255,0.8) !important;
+        padding: 1rem;
+        border-radius: 8px;
+        margin: 1rem 0;
     }
     }
     .core-config > div {
