@@ -47,33 +47,34 @@ st.markdown("""
 <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
     
-    /* Clean futuristic theme */
+    /* Clean light futuristic theme */
     .stApp {
-        background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%);
-        color: #ffffff;
+        background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+        color: #2c3e50;
     }
     
     body, .main-header, .section-header {
         font-family: 'Inter', sans-serif;
-        color: #ffffff;
+        color: #2c3e50;
     }
     
     .main-header {
-        background: linear-gradient(135deg, #2d2d2d 0%, #1a1a1a 100%);
+        background: linear-gradient(135deg, #ffffff 0%, #f1f3f4 100%);
         padding: 2rem 0 1.5rem 0;
         text-align: center;
-        color: #ffffff;
+        color: #2c3e50;
         margin-bottom: 1.5rem;
-        border-radius: 12px;
-        border: 1px solid #333333;
-        letter-spacing: 0.5px;
+        border-radius: 16px;
+        border: 1px solid #e0e0e0;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+        letter-spacing: 0.3px;
     }
     
     .main-header h1 {
-        font-size: 2.2rem;
+        font-size: 2.4rem;
         font-weight: 600;
         margin-bottom: 0.5rem;
-        color: #ffffff;
+        color: #1a73e8;
         font-family: 'Inter', sans-serif;
     }
     
@@ -81,109 +82,123 @@ st.markdown("""
         font-size: 1rem;
         font-weight: 400;
         margin-bottom: 0.2rem;
-        color: #cccccc;
+        color: #5f6368;
     }
     
     .section-header {
-        background: #1a1a1a;
-        color: #ffffff;
+        background: #ffffff;
+        color: #1a73e8;
         font-size: 1.1rem;
-        font-weight: 500;
+        font-weight: 600;
         margin: 1.5rem 0 1rem 0;
         padding: 0.8rem 1.2rem;
-        border: 1px solid #333333;
-        border-radius: 8px;
-        letter-spacing: 0.3px;
+        border: 1px solid #e8f0fe;
+        border-radius: 12px;
+        letter-spacing: 0.2px;
+        box-shadow: 0 2px 12px rgba(26,115,232,0.1);
     }
     
-    /* Clean inputs */
+    /* Clean modern inputs */
     .stTextInput > div > div > input {
-        background: #1a1a1a;
-        border: 1px solid #333333;
-        border-radius: 6px;
-        color: #ffffff;
-        padding: 0.7rem;
+        background: #ffffff;
+        border: 1px solid #dadce0;
+        border-radius: 8px;
+        color: #3c4043;
+        padding: 0.8rem;
+        box-shadow: 0 1px 6px rgba(32,33,36,0.1);
     }
     
     .stTextInput > div > div > input:focus {
-        border-color: #666666;
+        border-color: #1a73e8;
         outline: none;
+        box-shadow: 0 2px 8px rgba(26,115,232,0.2);
     }
     
     .stSelectbox > div > div {
-        background: #1a1a1a;
-        border: 1px solid #333333;
-        border-radius: 6px;
-        color: #ffffff;
+        background: #ffffff;
+        border: 1px solid #dadce0;
+        border-radius: 8px;
+        color: #3c4043;
+        box-shadow: 0 1px 6px rgba(32,33,36,0.1);
     }
     
-    /* Clean buttons */
+    /* Modern buttons */
     .stButton > button {
-        background: #2d2d2d;
+        background: linear-gradient(135deg, #1a73e8 0%, #4285f4 100%);
         color: #ffffff;
-        border: 1px solid #333333;
-        border-radius: 6px;
-        padding: 0.6rem 1.2rem;
+        border: none;
+        border-radius: 8px;
+        padding: 0.7rem 1.4rem;
         font-weight: 500;
-        font-size: 0.9rem;
+        font-size: 0.95rem;
         font-family: 'Inter', sans-serif;
         transition: all 0.2s ease;
+        box-shadow: 0 2px 8px rgba(26,115,232,0.3);
     }
     
     .stButton > button:hover {
-        background: #333333;
-        border-color: #666666;
+        background: linear-gradient(135deg, #1557b0 0%, #3367d6 100%);
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(26,115,232,0.4);
     }
     
     /* Clean success/error boxes */
     .success-box, .error-box {
-        background: #1a1a1a;
-        border-radius: 6px;
-        color: #ffffff;
+        background: #ffffff;
+        border-radius: 8px;
         padding: 1rem;
         margin: 1rem 0;
         font-weight: 400;
-        border: 1px solid;
+        border-left: 4px solid;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
     }
     
     .success-box {
-        border-color: #4CAF50;
-        color: #4CAF50;
+        border-left-color: #34a853;
+        color: #137333;
+        background: #e8f5e8;
     }
     
     .error-box {
-        border-color: #f44336;
-        color: #f44336;
+        border-left-color: #ea4335;
+        color: #d93025;
+        background: #fce8e6;
     }
     
     /* Fix text visibility */
     .stApp, .stApp > div, .stApp p, .stApp span, .stApp label {
-        color: #ffffff !important;
+        color: #3c4043 !important;
     }
     
     /* Input labels */
     .stTextInput label, .stSelectbox label, .stSlider label, .stCheckbox label {
-        color: #cccccc !important;
+        color: #5f6368 !important;
         font-weight: 500 !important;
     }
     
     /* Selectbox options */
     .stSelectbox > div > div > div {
-        background: #1a1a1a !important;
-        color: #ffffff !important;
+        background: #ffffff !important;
+        color: #3c4043 !important;
     }
     
     /* General text elements */
     h1, h2, h3, h4, h5, h6, p, span, div, label {
-        color: #ffffff !important;
+        color: #3c4043 !important;
     }
     
     /* Expander styling */
     .streamlit-expanderHeader {
-        background: #1a1a1a !important;
-        color: #ffffff !important;
-        border: 1px solid #333333 !important;
-        border-radius: 6px !important;
+        background: #ffffff !important;
+        color: #1a73e8 !important;
+        border: 1px solid #e8f0fe !important;
+        border-radius: 8px !important;
+        box-shadow: 0 1px 6px rgba(32,33,36,0.1) !important;
+    }
+    
+    /* Sidebar styling */
+    .css-1d391kg {
+        background: #ffffff;
     }
     }
     .core-config > div {
