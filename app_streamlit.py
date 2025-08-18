@@ -670,34 +670,46 @@ def main():
     # Core Configurations Section (compact, top)
     st.markdown('<div class="section-header">Core Configuration</div>', unsafe_allow_html=True)
     st.markdown('<div class="core-config">', unsafe_allow_html=True)
-    col1, col2, col3 = st.columns(3)
+    col1, col2, col3, col4, col5, col6 = st.columns([2, 1.5, 2, 0.8, 1.5, 1.5])
+    
     with col1:
         openai_api_key = st.text_input("OpenAI API Key", type="password", help="Required for script generation")
-        openai_model = st.selectbox("Model", ["gpt-4o-mini", "gpt-4o", "gpt-3.5-turbo"], help="Choose the OpenAI model")
     with col2:
-        col2a, col2b = st.columns([3, 1])
-        with col2a:
-            elevenlabs_api_key = st.text_input("ElevenLabs API Key", type="password", help="Required for voice synthesis")
-        with col2b:
-            if elevenlabs_api_key and not st.session_state.voices_loaded:
-                st.write("")  # Add space for alignment
-                if st.button("Load Voices"):
-                    with st.spinner("Loading voices..."):
-                        try:
-                            voices = get_available_voices(elevenlabs_api_key)
-                            st.session_state.available_voices = voices
-                            st.session_state.voices_loaded = True
-                            st.success(f"Loaded {len(voices)} voices successfully!")
-                        except Exception as e:
-                            st.error(f"Failed to load voices: {str(e)}")
-        if st.session_state.voices_loaded:
-            voice_options = [(v['name'], v['voice_id']) for v in st.session_state.available_voices]
-            host_voice = st.selectbox("Host Voice", voice_options, format_func=lambda x: x[0])
-            guest_voice = st.selectbox("Guest Voice", voice_options, format_func=lambda x: x[0])
-        else:
-            host_voice = guest_voice = None
+        openai_model = st.selectbox("Model", ["gpt-4o-mini", "gpt-4o", "gpt-3.5-turbo"], help="Choose the OpenAI model")
     with col3:
+        elevenlabs_api_key = st.text_input("ElevenLabs API Key", type="password", help="Required for voice synthesis")
+    with col4:
+        if elevenlabs_api_key and not st.session_state.voices_loaded:
+            st.write("")  # Add space for alignment
+            if st.button("Load Voices"):
+                with st.spinner("Loading voices..."):
+                    try:
+                        voices = get_available_voices(elevenlabs_api_key)
+                        st.session_state.available_voices = voices
+                        st.session_state.voices_loaded = True
+                        st.success(f"Loaded {len(voices)} voices successfully!")
+                    except Exception as e:
+                        st.error(f"Failed to load voices: {str(e)}")
+    
+    # Voice selection and names in second row if voices are loaded
+    if st.session_state.voices_loaded:
+        voice_options = [(v['name'], v['voice_id']) for v in st.session_state.available_voices]
+        with col5:
+            host_voice = st.selectbox("Host Voice", voice_options, format_func=lambda x: x[0])
+        with col6:
+            guest_voice = st.selectbox("Guest Voice", voice_options, format_func=lambda x: x[0])
+    else:
+        host_voice = guest_voice = None
+        with col5:
+            st.write("Load voices first")
+        with col6:
+            st.write("Load voices first")
+    
+    # Names row
+    col7, col8 = st.columns([1, 1])
+    with col7:
         host_name = st.text_input("Host Name", value="Alex")
+    with col8:
         guest_name = st.text_input("Guest Name", value="Sarah")
     st.markdown('</div>', unsafe_allow_html=True)
 
