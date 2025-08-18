@@ -42,207 +42,148 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# Custom CSS for futuristic design
+# Custom CSS for simple futuristic design
 st.markdown("""
 <style>
-    @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
     
-    /* Dark futuristic theme */
+    /* Clean futuristic theme */
     .stApp {
-        background: linear-gradient(135deg, #0c0c0c 0%, #1a1a2e 50%, #16213e 100%);
+        background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%);
         color: #ffffff;
     }
     
     body, .main-header, .section-header {
-        font-family: 'Orbitron', 'Inter', monospace;
+        font-family: 'Inter', sans-serif;
         color: #ffffff;
     }
     
     .main-header {
-        background: linear-gradient(135deg, #00d4ff 0%, #7b2cbf 50%, #ff006e 100%);
+        background: linear-gradient(135deg, #2d2d2d 0%, #1a1a1a 100%);
         padding: 2rem 0 1.5rem 0;
         text-align: center;
         color: #ffffff;
         margin-bottom: 1.5rem;
-        border-radius: 15px;
-        box-shadow: 0 0 30px rgba(0, 212, 255, 0.3);
-        letter-spacing: 1px;
-        position: relative;
-        overflow: hidden;
-    }
-    
-    .main-header::before {
-        content: "";
-        position: absolute;
-        top: 0;
-        left: -100%;
-        width: 100%;
-        height: 100%;
-        background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
-        animation: shine 3s infinite;
-    }
-    
-    @keyframes shine {
-        0% { left: -100%; }
-        100% { left: 100%; }
+        border-radius: 12px;
+        border: 1px solid #333333;
+        letter-spacing: 0.5px;
     }
     
     .main-header h1 {
-        font-size: 2.5rem;
-        font-weight: 900;
+        font-size: 2.2rem;
+        font-weight: 600;
         margin-bottom: 0.5rem;
-        letter-spacing: 3px;
-        text-shadow: 0 0 20px rgba(0, 212, 255, 0.8);
-        font-family: 'Orbitron', monospace;
+        color: #ffffff;
+        font-family: 'Inter', sans-serif;
     }
     
     .main-header p {
-        font-size: 1.1rem;
+        font-size: 1rem;
         font-weight: 400;
         margin-bottom: 0.2rem;
-        color: rgba(255,255,255,0.9);
-        text-shadow: 0 0 10px rgba(255,255,255,0.5);
+        color: #cccccc;
     }
     
     .section-header {
-        background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
-        color: #00d4ff;
-        font-size: 1.2rem;
-        font-weight: 700;
+        background: #1a1a1a;
+        color: #ffffff;
+        font-size: 1.1rem;
+        font-weight: 500;
         margin: 1.5rem 0 1rem 0;
         padding: 0.8rem 1.2rem;
-        border: 1px solid #00d4ff;
-        border-radius: 10px;
-        letter-spacing: 1px;
-        text-shadow: 0 0 10px rgba(0, 212, 255, 0.8);
-        box-shadow: 0 0 15px rgba(0, 212, 255, 0.2);
+        border: 1px solid #333333;
+        border-radius: 8px;
+        letter-spacing: 0.3px;
     }
     
-    /* Futuristic inputs */
+    /* Clean inputs */
     .stTextInput > div > div > input {
-        background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
-        border: 1px solid #00d4ff;
-        border-radius: 8px;
+        background: #1a1a1a;
+        border: 1px solid #333333;
+        border-radius: 6px;
         color: #ffffff;
         padding: 0.7rem;
-        box-shadow: 0 0 10px rgba(0, 212, 255, 0.2);
     }
     
     .stTextInput > div > div > input:focus {
-        border-color: #ff006e;
-        box-shadow: 0 0 20px rgba(255, 0, 110, 0.4);
+        border-color: #666666;
+        outline: none;
     }
     
     .stSelectbox > div > div {
-        background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
-        border: 1px solid #00d4ff;
-        border-radius: 8px;
+        background: #1a1a1a;
+        border: 1px solid #333333;
+        border-radius: 6px;
         color: #ffffff;
     }
     
-    /* Futuristic buttons */
+    /* Clean buttons */
     .stButton > button {
-        background: linear-gradient(135deg, #7b2cbf 0%, #ff006e 100%);
+        background: #2d2d2d;
         color: #ffffff;
-        border: none;
-        border-radius: 8px;
-        padding: 0.6rem 1.5rem;
-        font-weight: 700;
-        font-size: 1rem;
-        font-family: 'Orbitron', monospace;
-        transition: all 0.3s ease;
-        box-shadow: 0 0 15px rgba(123, 44, 191, 0.4);
-        letter-spacing: 1px;
-        text-transform: uppercase;
+        border: 1px solid #333333;
+        border-radius: 6px;
+        padding: 0.6rem 1.2rem;
+        font-weight: 500;
+        font-size: 0.9rem;
+        font-family: 'Inter', sans-serif;
+        transition: all 0.2s ease;
     }
     
     .stButton > button:hover {
-        background: linear-gradient(135deg, #ff006e 0%, #00d4ff 100%);
-        transform: translateY(-2px) scale(1.05);
-        box-shadow: 0 0 25px rgba(255, 0, 110, 0.6);
+        background: #333333;
+        border-color: #666666;
     }
     
-    /* Futuristic success/error boxes */
+    /* Clean success/error boxes */
     .success-box, .error-box {
-        background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
-        border-radius: 8px;
+        background: #1a1a1a;
+        border-radius: 6px;
         color: #ffffff;
         padding: 1rem;
         margin: 1rem 0;
-        font-weight: 500;
+        font-weight: 400;
         border: 1px solid;
-        box-shadow: 0 0 15px;
     }
     
     .success-box {
-        border-color: #00d4ff;
-        box-shadow: 0 0 15px rgba(0, 212, 255, 0.3);
+        border-color: #4CAF50;
+        color: #4CAF50;
     }
     
     .error-box {
-        border-color: #ff006e;
-        box-shadow: 0 0 15px rgba(255, 0, 110, 0.3);
+        border-color: #f44336;
+        color: #f44336;
     }
     
-    /* Futuristic core config */
-    .core-config {
-        display: flex;
-        flex-wrap: nowrap;
-        gap: 1rem;
-        justify-content: flex-start;
-        align-items: flex-start;
-        margin-bottom: 1.5rem;
-        padding: 1rem;
-        border: 1px solid #00d4ff;
-        border-radius: 15px;
-        background: linear-gradient(135deg, rgba(26,26,46,0.8) 0%, rgba(22,33,62,0.8) 100%);
-        backdrop-filter: blur(10px);
-        box-shadow: 0 0 30px rgba(0, 212, 255, 0.2);
-    }
-    
-    /* Fix text visibility in dark mode */
+    /* Fix text visibility */
     .stApp, .stApp > div, .stApp p, .stApp span, .stApp label {
         color: #ffffff !important;
     }
     
-    /* Input labels and text */
+    /* Input labels */
     .stTextInput label, .stSelectbox label, .stSlider label, .stCheckbox label {
-        color: #00d4ff !important;
-        font-weight: 600 !important;
-        text-shadow: 0 0 5px rgba(0, 212, 255, 0.3) !important;
+        color: #cccccc !important;
+        font-weight: 500 !important;
     }
     
     /* Selectbox options */
     .stSelectbox > div > div > div {
-        background: #1a1a2e !important;
+        background: #1a1a1a !important;
         color: #ffffff !important;
-    }
-    
-    /* Slider text */
-    .stSlider > div > div > div > div {
-        color: #ffffff !important;
-    }
-    
-    /* Checkbox text */
-    .stCheckbox > label > div > p {
-        color: #ffffff !important;
-    }
-    
-    /* Metric text */
-    .metric-container, .metric-container * {
-        color: #ffffff !important;
-    }
-    
-    /* Expander text */
-    .streamlit-expanderHeader {
-        background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%) !important;
-        color: #00d4ff !important;
-        border: 1px solid #00d4ff !important;
     }
     
     /* General text elements */
     h1, h2, h3, h4, h5, h6, p, span, div, label {
         color: #ffffff !important;
+    }
+    
+    /* Expander styling */
+    .streamlit-expanderHeader {
+        background: #1a1a1a !important;
+        color: #ffffff !important;
+        border: 1px solid #333333 !important;
+        border-radius: 6px !important;
     }
     }
     .core-config > div {
