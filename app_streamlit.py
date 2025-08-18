@@ -835,7 +835,6 @@ def main():
 
     # Core Configurations Section (compact, top)
     st.markdown('<div class="section-header">Core Configuration</div>', unsafe_allow_html=True)
-    st.markdown('<div class="core-config">', unsafe_allow_html=True)
     
     # First Line: API keys, model, and load voices
     col1, col2, col3, col4 = st.columns([2, 1.5, 2, 1])
@@ -917,7 +916,6 @@ def main():
         host_voice = guest_voice = None
         host_name = "Alex"
         guest_name = "Sarah"
-    st.markdown('</div>', unsafe_allow_html=True)
 
     # Article Input Section
     st.markdown('<div class="section-header">Article Input</div>', unsafe_allow_html=True)
