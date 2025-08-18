@@ -808,15 +808,118 @@ def main():
         article_url = st.text_input("Article URL", placeholder="https://example.com/article", help="Paste the URL of the article")
     with col_btn:
         st.markdown('<div style="margin-top: 28px;"></div>', unsafe_allow_html=True)
-        scrape_button = st.button("🔍 Scrape Article", disabled=not article_url)
+        record_podcast = st.button("🎙️ Record Podcast", disabled=not (article_url and host_voice and guest_voice and elevenlabs_api_key and openai_api_key))
     
     # Set default values
     pause_duration = 800  # Default 800ms pause
     aussie_style = True   # Default Australian style
     
-    # Script Generation
-    if article_url:
-        render_script_generation(openai_model, article_url, host_name, guest_name, aussie_style)
+    # All-in-one podcast generation
+    if record_podcast and article_url:
+        with st.spinner("🎙️ Creating your podcast... This may take a few minutes"):
+            try:
+                # Step 1: Scrape Article
+                st.info("📖 Scraping article content...")
+                article = scrape_and_clean(article_url)
+                
+                # Step 2: Generate Script
+                st.info("🤖 Generating conversational script...")
+                import openai
+                openai.api_key = openai_api_key
+                
+                messages = build_messages(
+                    article_title=article["title"],
+                    article_text=article["text"],
+                    host_name=host_name,
+                    guest_name=guest_name,
+                    aussie=aussie_style
+                )
+                
+                response = openai.ChatCompletion.create(
+                    model=openai_model,
+                    messages=messages,
+                    temperature=0.7
+                )
+                
+                response_content = response.choices[0].message.content
+                script_content = validate_script_response(response_content, host_name, guest_name)
+                st.session_state.generated_script = script_content.get("script", [])
+                st.session_state.script_generated = True
+                st.session_state.article_title = article["title"]
+                
+                # Step 3: Generate Audio (if available)
+                if _AUDIO_AVAILABLE and all([host_voice, guest_voice]):
+                    st.info("🎵 Generating podcast audio...")
+                    
+                    try:
+                        # Use the existing audio synthesis function
+                        audio_bytes, filename = synthesize_episode(
+                            script=st.session_state.generated_script,
+                            pause_ms=pause_duration,
+                            host_voice_id=host_voice[1],
+                            guest_voice_id=guest_voice[1],
+                            eleven_key=elevenlabs_api_key
+                        )
+                        
+                        st.session_state.audio_generated = True
+                        st.session_state.combined_audio = audio_bytes
+                        
+                        st.success("🎉 Podcast created successfully!")
+                        
+                        # Display results
+                        st.markdown("### 🎧 Your Podcast is Ready!")
+                        st.audio(audio_bytes)
+                        
+                        # Download button
+                        st.download_button(
+                            label="⬇️ Download Podcast",
+                            data=audio_bytes,
+                            file_name=f"podcast_{st.session_state.article_title.replace(' ', '_')[:50]}.mp3",
+                            mime="audio/mp3"
+                        )
+                        
+                    except Exception as audio_error:
+                        st.warning(f"⚠️ Audio generation failed: {str(audio_error)}")
+                        st.info("📄 Generating script text file instead...")
+                        
+                        # Fallback to script file
+                        script_text = generate_script_text_file(st.session_state.generated_script, st.session_state.article_title)
+                        st.download_button(
+                            label="📥 Download Script as Text File",
+                            data=script_text,
+                            file_name=f"podcast_script_{st.session_state.article_title.replace(' ', '_')[:50]}.txt",
+                            mime="text/plain"
+                        )
+                        
+                else:
+                    # Audio not available, provide script download
+                    st.info("📄 Audio synthesis not available. Generating script text file...")
+                    script_text = generate_script_text_file(st.session_state.generated_script, st.session_state.article_title)
+                    st.download_button(
+                        label="📥 Download Script as Text File",
+                        data=script_text,
+                        file_name=f"podcast_script_{st.session_state.article_title.replace(' ', '_')[:50]}.txt",
+                        mime="text/plain"
+                    )
+                    st.success("✅ Podcast script generated successfully!")
+                
+            except Exception as e:
+                st.error(f"❌ Error creating podcast: {str(e)}")
+    
+    # Display generated script if available
+    if st.session_state.script_generated and st.session_state.generated_script:
+        with st.expander("🔍 View Generated Script"):
+            for i, turn in enumerate(st.session_state.generated_script, 1):
+                speaker = turn.get('speaker', 'Unknown')
+                text = turn.get('text', '')
+                
+                if speaker.lower() == 'host':
+                    st.markdown(f"**🎤 {host_name} (Host):** {text}")
+                else:
+                    st.markdown(f"**👥 {guest_name} (Guest):** {text}")
+                
+                if i < len(st.session_state.generated_script):
+                    st.markdown("---")
 
     # Audio Generation Section
     st.markdown('<div class="section-header">Audio Generation</div>', unsafe_allow_html=True)
