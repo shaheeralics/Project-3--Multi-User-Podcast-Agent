@@ -670,8 +670,9 @@ def main():
     # Core Configurations Section (compact, top)
     st.markdown('<div class="section-header">Core Configuration</div>', unsafe_allow_html=True)
     st.markdown('<div class="core-config">', unsafe_allow_html=True)
-    col1, col2, col3, col4, col5, col6 = st.columns([2, 1.5, 2, 0.8, 1.5, 1.5])
     
+    # First Line: API keys, model, and load voices
+    col1, col2, col3, col4 = st.columns([2, 1.5, 2, 1])
     with col1:
         openai_api_key = st.text_input("OpenAI API Key", type="password", help="Required for script generation")
     with col2:
@@ -691,26 +692,65 @@ def main():
                     except Exception as e:
                         st.error(f"Failed to load voices: {str(e)}")
     
-    # Voice selection in the same row - only show if voices are loaded
+    # Second Line: Names, Voice Selection, and Preview Buttons (only show if voices are loaded)
     if st.session_state.voices_loaded:
         voice_options = [(v['name'], v['voice_id']) for v in st.session_state.available_voices]
+        
+        col5, col6, col7, col8, col9, col10 = st.columns([1.2, 1.5, 0.8, 1.2, 1.5, 0.8])
+        
+        # Guest configuration
         with col5:
-            host_voice = st.selectbox("Host Voice", voice_options, format_func=lambda x: x[0])
+            guest_name = st.text_input("Guest Name", value="Sarah")
         with col6:
             guest_voice = st.selectbox("Guest Voice", voice_options, format_func=lambda x: x[0])
+        with col7:
+            preview_guest = st.button("Preview Guest", key="preview_guest")
+        
+        # Host configuration  
+        with col8:
+            host_name = st.text_input("Host Name", value="Alex")
+        with col9:
+            host_voice = st.selectbox("Host Voice", voice_options, format_func=lambda x: x[0])
+        with col10:
+            preview_host = st.button("Preview Host", key="preview_host")
+        
+        # Third Line: Preview audio players
+        col11, col12 = st.columns(2)
+        
+        # Guest voice preview
+        if preview_guest and guest_voice:
+            with col11:
+                with st.spinner("Generating guest voice preview..."):
+                    try:
+                        audio_data = preview_voice(
+                            elevenlabs_api_key,
+                            guest_voice[1],
+                            f"Hello! I'm {guest_name}, excited to be here!"
+                        )
+                        st.audio(audio_data)
+                        st.caption(f"Guest: {guest_name}")
+                    except Exception as e:
+                        st.error(f"Guest preview failed: {str(e)}")
+        
+        # Host voice preview
+        if preview_host and host_voice:
+            with col12:
+                with st.spinner("Generating host voice preview..."):
+                    try:
+                        audio_data = preview_voice(
+                            elevenlabs_api_key,
+                            host_voice[1],
+                            f"G'day! I'm {host_name}, your podcast host."
+                        )
+                        st.audio(audio_data)
+                        st.caption(f"Host: {host_name}")
+                    except Exception as e:
+                        st.error(f"Host preview failed: {str(e)}")
+        
     else:
         host_voice = guest_voice = None
-        with col5:
-            st.write("Load voices first")
-        with col6:
-            st.write("Load voices first")
-    
-    # Names row
-    col7, col8 = st.columns([1, 1])
-    with col7:
-        host_name = st.text_input("Host Name", value="Alex")
-    with col8:
-        guest_name = st.text_input("Guest Name", value="Sarah")
+        host_name = "Alex"
+        guest_name = "Sarah"
     st.markdown('</div>', unsafe_allow_html=True)
 
     # Article Input Section
