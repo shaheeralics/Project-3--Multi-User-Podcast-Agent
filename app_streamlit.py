@@ -685,6 +685,7 @@ def main():
         with col6:
             guest_voice = st.selectbox("Guest Voice", voice_options, format_func=lambda x: x[0])
         with col7:
+            st.markdown('<div style="margin-top: 28px;"></div>', unsafe_allow_html=True)
             preview_guest = st.button("Preview Guest", key="preview_guest")
         
         # Host configuration  
@@ -693,6 +694,7 @@ def main():
         with col9:
             host_voice = st.selectbox("Host Voice", voice_options, format_func=lambda x: x[0])
         with col10:
+            st.markdown('<div style="margin-top: 28px;"></div>', unsafe_allow_html=True)
             preview_host = st.button("Preview Host", key="preview_host")
         
         # Third Line: Preview audio players
