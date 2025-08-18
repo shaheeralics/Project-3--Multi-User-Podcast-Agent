@@ -53,7 +53,7 @@ st.markdown("""
         padding: 2rem 0 1rem 0;
         text-align: center;
         color: #222;
-        margin-bottom: 2rem;
+        margin-bottom: 1.2rem;
         border-bottom: 2px solid #eee;
         letter-spacing: 0.5px;
     }
@@ -68,6 +68,21 @@ st.markdown("""
         font-weight: 400;
         margin-bottom: 0.2rem;
         color: #555;
+    }
+    .core-config {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 2rem;
+        justify-content: center;
+        align-items: flex-start;
+        margin-bottom: 2rem;
+        padding: 1rem 0 0.5rem 0;
+        border-bottom: 1px solid #eee;
+    }
+    .core-config > div {
+        min-width: 220px;
+        max-width: 320px;
+        flex: 1 1 220px;
     }
     .section-header {
         background: none;
@@ -650,26 +665,53 @@ def main():
     
     initialize_session_state()
     render_header()
-    
-    # Get API keys from secrets
-    openai_api_key, elevenlabs_api_key = get_api_keys()
-    
-    # API Status Display
-    openai_model = render_api_status(openai_api_key, elevenlabs_api_key)
-    
-    # Voice Selection
-    host_name, host_voice, guest_name, guest_voice = render_voice_selection()
-    
-    # Article Input
-    article_url, pause_duration, aussie_style = render_article_section()
-    
-    # Script Generation
+
+    # Core Configurations Section (compact, top)
+    st.markdown('<div class="section-header">Core Configuration</div>', unsafe_allow_html=True)
+    st.markdown('<div class="core-config">', unsafe_allow_html=True)
+    col1, col2, col3 = st.columns(3)
+    with col1:
+        openai_api_key = st.text_input("OpenAI API Key", type="password", help="Required for script generation")
+        openai_model = st.selectbox("Model", ["gpt-4o-mini", "gpt-4o", "gpt-3.5-turbo"], help="Choose the OpenAI model")
+    with col2:
+        elevenlabs_api_key = st.text_input("ElevenLabs API Key", type="password", help="Required for voice synthesis")
+        # Voice loading and selection
+        if elevenlabs_api_key and not st.session_state.voices_loaded:
+            if st.button("Load Voices"):
+                with st.spinner("Loading voices..."):
+                    try:
+                        voices = get_available_voices(elevenlabs_api_key)
+                        st.session_state.available_voices = voices
+                        st.session_state.voices_loaded = True
+                        st.success(f"Loaded {len(voices)} voices successfully!")
+                    except Exception as e:
+                        st.error(f"Failed to load voices: {str(e)}")
+        if st.session_state.voices_loaded:
+            voice_options = [(v['name'], v['voice_id']) for v in st.session_state.available_voices]
+            host_voice = st.selectbox("Host Voice", voice_options, format_func=lambda x: x[0])
+            guest_voice = st.selectbox("Guest Voice", voice_options, format_func=lambda x: x[0])
+        else:
+            host_voice = guest_voice = None
+    with col3:
+        host_name = st.text_input("Host Name", value="Alex")
+        guest_name = st.text_input("Guest Name", value="Sarah")
+    st.markdown('</div>', unsafe_allow_html=True)
+
+    # Article Input Section
+    st.markdown('<div class="section-header">Article Input</div>', unsafe_allow_html=True)
+    article_url = st.text_input("Article URL", placeholder="https://example.com/article", help="Paste the URL of the article")
+    pause_duration = st.slider("Pause between speakers (ms)", min_value=200, max_value=2000, value=800, step=100)
+    aussie_style = st.checkbox("Australian Style", value=True, help="Generate script in Australian conversational style")
+
+    # Script Generation Section
+    st.markdown('<div class="section-header">Script Generation</div>', unsafe_allow_html=True)
     render_script_generation(openai_model, article_url, host_name, guest_name, aussie_style)
-    
-    # Audio Generation
+
+    # Audio Generation Section
+    st.markdown('<div class="section-header">Audio Generation</div>', unsafe_allow_html=True)
     render_audio_generation(host_voice, guest_voice, pause_duration)
-    
-    # Footer (minimal, clean)
+
+    # Footer
     st.markdown("""
     <div style="text-align: center; color: #888; margin-top:2rem; font-size:0.95rem;">
         Podcast GPT &mdash; Powered by Streamlit, OpenAI, and ElevenLabs
