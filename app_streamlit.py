@@ -691,7 +691,7 @@ def main():
                     except Exception as e:
                         st.error(f"Failed to load voices: {str(e)}")
     
-    # Voice selection and names in second row if voices are loaded
+    # Voice selection in the same row - only show if voices are loaded
     if st.session_state.voices_loaded:
         voice_options = [(v['name'], v['voice_id']) for v in st.session_state.available_voices]
         with col5:
