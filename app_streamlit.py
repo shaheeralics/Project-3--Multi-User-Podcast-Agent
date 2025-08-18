@@ -491,90 +491,20 @@ def render_voice_selection():
     
     return host_name, host_voice, guest_name, guest_voice
 
-def render_article_section():
-    """Render article input section"""
-    st.markdown('<div class="section-header"><h3>📰 Article Input</h3></div>', unsafe_allow_html=True)
-    
-    article_url = st.text_input(
-        "Article URL",
-        placeholder="https://example.com/article",
-        help="Paste the URL of the article you want to convert to a podcast"
-    )
-    
-    col1, col2, col3 = st.columns(3)
-    with col1:
-        pause_duration = st.slider(
-            "Pause between speakers (ms)",
-            min_value=200,
-            max_value=2000,
-            value=800,
-            step=100,
-            help="Duration of silence between speaker turns"
-        )
-    
-    with col2:
-        aussie_style = st.checkbox(
-            "Australian Style",
-            value=True,
-            help="Generate script in Australian conversational style"
-        )
-    
-    with col3:
-        st.metric("📊 Status", "Ready" if article_url else "Waiting for URL")
-    
-    return article_url, pause_duration, aussie_style
-
 def render_script_generation(openai_model, article_url, host_name, guest_name, aussie_style):
-    """Render script generation section"""
-    st.markdown('<div class="section-header"><h3>Script Generation</h3></div>', unsafe_allow_html=True)
-    
-    if not all([article_url, host_name, guest_name]):
-        st.warning("⚠️ Please fill in all required fields above to generate script")
-        return
-    
+    """Render script generation section - simplified version"""
     if st.button("🚀 Generate Podcast Script", key="generate_script"):
         with st.spinner("🔄 Processing article and generating script..."):
             try:
-                # Progress tracking
-                progress_bar = st.progress(0)
-                status_text = st.empty()
-                
-                # Step 1: Scrape article
-                status_text.text("📖 Scraping article content...")
-                progress_bar.progress(20)
-                article = scrape_and_clean(article_url)
-                
-                # Step 2: Generate script
-                status_text.text("🤖 Generating conversational script...")
-                progress_bar.progress(50)
-                
+                # Get API key
                 openai_api_key, _ = get_api_keys()
                 
-                # Import OpenAI with error handling - using older version for compatibility
-                try:
-                    import openai
-                    openai.api_key = openai_api_key
-                    
-                    # Test the API key with a simple request
-                    test_response = openai.ChatCompletion.create(
-                        model=openai_model,
-                        messages=[{"role": "user", "content": "Say 'test' as JSON: {\"test\": \"success\"}"}],
-                        max_tokens=50,
-                        temperature=0.1
-                    )
-                    st.write(f"Debug: API test successful - {len(test_response.choices[0].message.content)} chars")
-                    
-                except ImportError:
-                    st.error("❌ OpenAI package not installed. Please ensure 'openai==0.28.1' is in requirements.txt")
-                    st.stop()
-                except Exception as e:
-                    st.error(f"❌ Error with OpenAI API: {str(e)}")
-                    st.write("This could be due to:")
-                    st.write("- Invalid API key")
-                    st.write("- Insufficient OpenAI credits")
-                    st.write("- Model not available")
-                    st.write("- Rate limiting")
-                    st.stop()
+                # Scrape article
+                article = scrape_and_clean(article_url)
+                
+                # Generate script using OpenAI
+                import openai
+                openai.api_key = openai_api_key
                 
                 messages = build_messages(
                     article_title=article["title"],
@@ -584,71 +514,26 @@ def render_script_generation(openai_model, article_url, host_name, guest_name, a
                     aussie=aussie_style
                 )
                 
-                progress_bar.progress(80)
+                response = openai.ChatCompletion.create(
+                    model=openai_model,
+                    messages=messages,
+                    temperature=0.7
+                )
                 
-                # Debug: Show API key status
-                # st.write(f"Debug: Using OpenAI API key ending in: ...{openai_api_key[-4:]}")
-                # st.write(f"Debug: Model: {openai_model}")
-                # st.write(f"Debug: Messages count: {len(messages)}")
+                response_content = response.choices[0].message.content
+                script_content = validate_script_response(response_content, host_name, guest_name)
+                st.session_state.generated_script = script_content.get("script", [])
+                st.session_state.script_generated = True
+                st.session_state.article_title = article["title"]
                 
-                try:
-                    response = openai.ChatCompletion.create(
-                        model=openai_model,
-                        messages=messages,
-                        temperature=0.7
-                    )
-                    
-                    # Debug: Show response structure
-                    # st.write(f"Debug: Response type: {type(response)}")
-                    # st.write(f"Debug: Response keys: {list(response.keys()) if hasattr(response, 'keys') else 'No keys'}")
-                    
-                    # Get the response content
-                    response_content = response.choices[0].message.content
-                    
-                    # Debug: Show response length and first 100 chars
-                    # st.write(f"Debug: Response length: {len(response_content) if response_content else 0}")
-                    # st.write(f"Debug: First 100 chars: {response_content[:100] if response_content else 'EMPTY RESPONSE'}...")
-                    # st.write(f"Debug: Last 50 chars: ...{response_content[-50:] if response_content and len(response_content) > 50 else response_content}")
-                    
-                    # Check for empty response
-                    if not response_content or not response_content.strip():
-                        raise Exception("OpenAI returned an empty response. This could be due to API limits, invalid API key, or model issues.")
-                    
-                    # Validate and parse the response
-                    script_content = validate_script_response(response_content, host_name, guest_name)
-                    st.session_state.generated_script = script_content.get("script", [])
-                    st.session_state.script_generated = True
-                    st.session_state.article_title = article["title"]
-                    
-                except Exception as api_error:
-                    st.error(f"❌ OpenAI API Error: {str(api_error)}")
-                    # st.write(f"Debug: API Error type: {type(api_error)}")
-                    raise api_error
-                
-                progress_bar.progress(100)
-                status_text.text("✅ Script generation complete!")
-                
-                st.markdown('<div class="success-box">🎉 Script generated successfully!</div>', unsafe_allow_html=True)
+                st.success("🎉 Script generated successfully!")
                 
             except Exception as e:
-                st.markdown(f'<div class="error-box">❌ Error: {str(e)}</div>', unsafe_allow_html=True)
+                st.error(f"❌ Error: {str(e)}")
     
     # Display generated script
     if st.session_state.script_generated and st.session_state.generated_script:
-        st.subheader("📋 Generated Script Preview")
-        
-        # Script statistics
-        col1, col2, col3 = st.columns(3)
-        with col1:
-            st.metric("📊 Total Turns", len(st.session_state.generated_script))
-        with col2:
-            total_words = sum(len(turn.get('text', '').split()) for turn in st.session_state.generated_script)
-            st.metric("📝 Total Words", total_words)
-        with col3:
-            estimated_duration = total_words / 150  # ~150 words per minute
-            st.metric("⏱️ Est. Duration", f"{estimated_duration:.1f} min")
-        
-        with st.expander("🔍 View Full Script", expanded=True):
+        with st.expander("� View Generated Script", expanded=True):
             for i, turn in enumerate(st.session_state.generated_script, 1):
                 speaker = turn.get('speaker', 'Unknown')
                 text = turn.get('text', '')
@@ -917,15 +802,18 @@ def main():
         host_name = "Alex"
         guest_name = "Sarah"
 
-    # Article Input Section
-    st.markdown('<div class="section-header">Article Input</div>', unsafe_allow_html=True)
+    # Configuration inputs (moved here from removed Article Input section)
     article_url = st.text_input("Article URL", placeholder="https://example.com/article", help="Paste the URL of the article")
-    pause_duration = st.slider("Pause between speakers (ms)", min_value=200, max_value=2000, value=800, step=100)
-    aussie_style = st.checkbox("Australian Style", value=True, help="Generate script in Australian conversational style")
-
-    # Script Generation Section
-    st.markdown('<div class="section-header">Script Generation</div>', unsafe_allow_html=True)
-    render_script_generation(openai_model, article_url, host_name, guest_name, aussie_style)
+    
+    col_config1, col_config2 = st.columns(2)
+    with col_config1:
+        pause_duration = st.slider("Pause between speakers (ms)", min_value=200, max_value=2000, value=800, step=100)
+    with col_config2:
+        aussie_style = st.checkbox("Australian Style", value=True, help="Generate script in Australian conversational style")
+    
+    # Script Generation
+    if article_url:
+        render_script_generation(openai_model, article_url, host_name, guest_name, aussie_style)
 
     # Audio Generation Section
     st.markdown('<div class="section-header">Audio Generation</div>', unsafe_allow_html=True)
