@@ -45,10 +45,6 @@ st.set_page_config(
 # Custom CSS for n8n.io inspired professional design
 st.markdown("""
 <style>
-    /* Align Load Voices button with specific pixel margin */
-    div[data-testid="column"]:nth-child(4) button {
-        margin-top: 75px !important;
-    }
     body, .main-header, .section-header {
         font-family: 'Inter', 'Segoe UI', Arial, sans-serif;
     }
@@ -686,6 +682,7 @@ def main():
     with col4:
         if elevenlabs_api_key and not st.session_state.voices_loaded:
             st.write("")  # Add space for alignment
+            st.write("")  # Add more space
             if st.button("Load Voices"):
                 with st.spinner("Loading voices..."):
                     try:
