@@ -46,7 +46,7 @@ st.set_page_config(
 st.markdown("""
 <style>
     div[data-testid="column"]:nth-child(2) div[data-testid="stVerticalBlock"] > div:nth-child(2) button {
-        margin-top: 10px;
+        margin-top: 15px;
     }
     body, .main-header, .section-header {
         font-family: 'Inter', 'Segoe UI', Arial, sans-serif;
