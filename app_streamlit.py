@@ -45,81 +45,84 @@ st.set_page_config(
 # Custom CSS for n8n.io inspired professional design
 st.markdown("""
 <style>
+    body, .main-header, .section-header, .api-section, .voice-card {
+        font-family: 'Inter', 'Segoe UI', Arial, sans-serif;
+    }
     .main-header {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        padding: 2rem;
-        border-radius: 10px;
+        background: linear-gradient(120deg, #0f2027 0%, #2c5364 100%);
+        padding: 2.5rem 1rem 2rem 1rem;
+        border-radius: 18px;
         text-align: center;
-        color: white;
-        margin-bottom: 2rem;
+        color: #fff;
+        margin-bottom: 2.5rem;
+        box-shadow: 0 4px 32px rgba(44,83,100,0.18);
+        letter-spacing: 0.5px;
     }
-    
+    .main-header h1 {
+        font-size: 2.8rem;
+        font-weight: 800;
+        margin-bottom: 0.5rem;
+        letter-spacing: 1px;
+    }
+    .main-header p {
+        font-size: 1.2rem;
+        font-weight: 400;
+        margin-bottom: 0.2rem;
+        color: #e0e0e0;
+    }
     .section-header {
-        background: linear-gradient(135deg, #00c9a7 0%, #ff6a88 100%);
-        padding: 1rem;
-        border-radius: 10px;
-        margin: 1rem 0;
-        color: white !important;
+        background: linear-gradient(120deg, #232526 0%, #414345 100%);
+        padding: 1.1rem 1.2rem;
+        border-radius: 12px;
+        margin: 1.2rem 0 1.2rem 0;
+        color: #fff !important;
+        font-size: 1.25rem;
+        font-weight: 600;
+        box-shadow: 0 2px 16px rgba(44,83,100,0.10);
         border: none;
-        box-shadow: 0 2px 10px rgba(0,201,167,0.15);
+        letter-spacing: 0.5px;
     }
-    
-    .api-section {
-        background: #fff;
-        padding: 1.5rem;
+    .api-section, .voice-card {
+        background: #181a1b;
+        padding: 1.2rem;
         border-radius: 10px;
-        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        box-shadow: 0 2px 10px rgba(44,83,100,0.08);
         margin: 1rem 0;
+        color: #e0e0e0;
+        border: none;
     }
-    
-    .voice-card {
-        background: #f8f9fa;
-        padding: 1rem;
-        border-radius: 8px;
-        border: 1px solid #e9ecef;
-        margin: 0.5rem 0;
-    }
-    
-    .success-box {
-        background: #d4edda;
-        border: 1px solid #c3e6cb;
-        color: #155724;
-        padding: 1rem;
-        border-radius: 5px;
-        margin: 1rem 0;
-    }
-    
-    .error-box {
-        background: #f8d7da;
-        border: 1px solid #f5c6cb;
-        color: #721c24;
-        padding: 1rem;
-        border-radius: 5px;
-        margin: 1rem 0;
-    }
-    
-    .info-box {
-        background: #d1ecf1;
-        border: 1px solid #bee5eb;
-        color: #0c5460;
-        padding: 1rem;
-        border-radius: 5px;
-        margin: 1rem 0;
-    }
-    
     .stButton > button {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        color: white;
+        background: linear-gradient(120deg, #0f2027 0%, #2c5364 100%);
+        color: #fff;
         border: none;
-        border-radius: 25px;
+        border-radius: 22px;
         padding: 0.5rem 2rem;
         font-weight: 600;
-        transition: all 0.3s ease;
+        font-size: 1.1rem;
+        transition: all 0.2s ease;
+        box-shadow: 0 2px 8px rgba(44,83,100,0.10);
     }
-    
     .stButton > button:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+        background: linear-gradient(120deg, #232526 0%, #414345 100%);
+        color: #fff;
+        transform: translateY(-1px) scale(1.03);
+        box-shadow: 0 6px 24px rgba(44,83,100,0.18);
+    }
+    .success-box, .error-box {
+        background: #232526;
+        border-radius: 8px;
+        color: #fff;
+        padding: 1rem;
+        margin: 1rem 0;
+        font-weight: 500;
+        box-shadow: 0 2px 10px rgba(44,83,100,0.10);
+        border: none;
+    }
+    .success-box {
+        border-left: 4px solid #00c9a7;
+    }
+    .error-box {
+        border-left: 4px solid #ff6a88;
     }
 </style>
 """, unsafe_allow_html=True)
@@ -190,9 +193,8 @@ def render_header():
     """Render the main application header"""
     st.markdown("""
     <div class="main-header">
-        <h1>🎙️ AI Podcast Generator</h1>
-    <p>Turn long-form articles into ready-to-record conversational podcast scripts in minutes.</p>
-    <small>Save research time • Consistent tone & style • Instant dialogue structure</small>
+        <h1>� Podcast GPT</h1>
+        <p>Transform articles into professional, conversational podcasts with AI.</p>
     </div>
     """, unsafe_allow_html=True)
 
@@ -679,16 +681,12 @@ def main():
     # Audio Generation
     render_audio_generation(host_voice, guest_voice, pause_duration)
     
-    # Footer
-    st.markdown("---")
-    col1, col2, col3 = st.columns([1, 2, 1])
-    with col2:
-        st.markdown("""
-        <div style="text-align: center; color: #666;">
-            Built with ❤️ using Streamlit, OpenAI, and ElevenLabs<br>
-            <small>🔒 Production Ready | 🚀 Auto-Configured APIs</small>
-        </div>
-        """, unsafe_allow_html=True)
+    # Footer (minimal, clean)
+    st.markdown("""
+    <div style="text-align: center; color: #e0e0e0; margin-top:2rem; font-size:0.95rem;">
+        Podcast GPT &mdash; Powered by Streamlit, OpenAI, and ElevenLabs
+    </div>
+    """, unsafe_allow_html=True)
 
 if __name__ == "__main__":
     main()
