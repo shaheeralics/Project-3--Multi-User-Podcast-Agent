@@ -48,7 +48,7 @@ st.markdown("""
     /* Align Load Voices button with specific pixel margin */
     button[kind="primary"]:has-text("Load Voices"), 
     button:has-text("Load Voices") {
-        margin-top: 25px !important;
+        margin-top: 2px !important;
     }
     body, .main-header, .section-header {
         font-family: 'Inter', 'Segoe UI', Arial, sans-serif;
