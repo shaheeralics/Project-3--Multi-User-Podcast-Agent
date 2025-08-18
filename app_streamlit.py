@@ -42,163 +42,265 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# Custom CSS for simple futuristic design
+# Custom CSS for 2035 futuristic design
 st.markdown("""
 <style>
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap');
     
-    /* Clean light futuristic theme */
+    /* 2035 Futuristic Neural Theme */
     .stApp {
-        background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-        color: #2c3e50;
+        background: radial-gradient(circle at 20% 80%, #120458 0%, #000000 50%), 
+                    radial-gradient(circle at 80% 20%, #270082 0%, #000000 50%),
+                    linear-gradient(135deg, #0a0a0a 0%, #1a0033 100%);
+        color: #e0e0ff;
+        position: relative;
+    }
+    
+    .stApp::before {
+        content: "";
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: 
+            radial-gradient(2px 2px at 20px 30px, #00ffff, transparent),
+            radial-gradient(2px 2px at 40px 70px, #ff00ff, transparent),
+            radial-gradient(1px 1px at 90px 40px, #00ff00, transparent),
+            radial-gradient(1px 1px at 130px 80px, #ffff00, transparent);
+        background-repeat: repeat;
+        background-size: 200px 200px;
+        opacity: 0.1;
+        pointer-events: none;
+        animation: neural-pulse 8s infinite ease-in-out;
+    }
+    
+    @keyframes neural-pulse {
+        0%, 100% { opacity: 0.1; }
+        50% { opacity: 0.2; }
     }
     
     body, .main-header, .section-header {
-        font-family: 'Inter', sans-serif;
-        color: #2c3e50;
+        font-family: 'Space Grotesk', sans-serif;
+        color: #e0e0ff;
     }
     
     .main-header {
-        background: linear-gradient(135deg, #ffffff 0%, #f1f3f4 100%);
-        padding: 2rem 0 1.5rem 0;
+        background: linear-gradient(135deg, 
+            rgba(0,255,255,0.1) 0%, 
+            rgba(128,0,255,0.1) 50%, 
+            rgba(255,0,128,0.1) 100%);
+        backdrop-filter: blur(20px);
+        border: 1px solid rgba(0,255,255,0.3);
+        padding: 2.5rem 0 2rem 0;
         text-align: center;
-        color: #2c3e50;
-        margin-bottom: 1.5rem;
-        border-radius: 16px;
-        border: 1px solid #e0e0e0;
-        box-shadow: 0 4px 20px rgba(0,0,0,0.08);
-        letter-spacing: 0.3px;
+        margin-bottom: 2rem;
+        border-radius: 20px;
+        box-shadow: 
+            0 8px 32px rgba(0,255,255,0.2),
+            inset 0 1px 0 rgba(255,255,255,0.1);
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .main-header::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, 
+            transparent, 
+            rgba(0,255,255,0.1), 
+            transparent);
+        animation: hologram-scan 3s infinite;
+    }
+    
+    @keyframes hologram-scan {
+        0% { left: -100%; }
+        100% { left: 100%; }
     }
     
     .main-header h1 {
-        font-size: 2.4rem;
+        font-size: 2.8rem;
         font-weight: 600;
         margin-bottom: 0.5rem;
-        color: #1a73e8;
-        font-family: 'Inter', sans-serif;
+        background: linear-gradient(135deg, #00ffff 0%, #ff00ff 50%, #ffff00 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        font-family: 'Space Grotesk', sans-serif;
+        letter-spacing: 1px;
+        text-shadow: 0 0 30px rgba(0,255,255,0.5);
     }
     
     .main-header p {
-        font-size: 1rem;
+        font-size: 1.1rem;
         font-weight: 400;
-        margin-bottom: 0.2rem;
-        color: #5f6368;
+        color: #a0a0ff;
+        text-shadow: 0 0 10px rgba(160,160,255,0.5);
     }
     
     .section-header {
-        background: #ffffff;
-        color: #1a73e8;
-        font-size: 1.1rem;
+        background: linear-gradient(135deg, 
+            rgba(0,255,255,0.05) 0%, 
+            rgba(128,0,255,0.05) 100%);
+        backdrop-filter: blur(10px);
+        color: #00ffff;
+        font-size: 1.2rem;
         font-weight: 600;
-        margin: 1.5rem 0 1rem 0;
-        padding: 0.8rem 1.2rem;
-        border: 1px solid #e8f0fe;
-        border-radius: 12px;
-        letter-spacing: 0.2px;
-        box-shadow: 0 2px 12px rgba(26,115,232,0.1);
+        margin: 2rem 0 1.5rem 0;
+        padding: 1rem 1.5rem;
+        border: 1px solid rgba(0,255,255,0.3);
+        border-radius: 15px;
+        letter-spacing: 0.5px;
+        box-shadow: 
+            0 4px 20px rgba(0,255,255,0.2),
+            inset 0 1px 0 rgba(255,255,255,0.1);
+        text-shadow: 0 0 10px rgba(0,255,255,0.8);
     }
     
-    /* Clean modern inputs */
+    /* Neural Network Inputs */
     .stTextInput > div > div > input {
-        background: #ffffff;
-        border: 1px solid #dadce0;
-        border-radius: 8px;
-        color: #3c4043;
-        padding: 0.8rem;
-        box-shadow: 0 1px 6px rgba(32,33,36,0.1);
+        background: rgba(20,20,40,0.8);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(0,255,255,0.3);
+        border-radius: 12px;
+        color: #e0e0ff;
+        padding: 1rem;
+        box-shadow: 
+            0 4px 20px rgba(0,255,255,0.1),
+            inset 0 1px 0 rgba(255,255,255,0.1);
+        transition: all 0.3s ease;
     }
     
     .stTextInput > div > div > input:focus {
-        border-color: #1a73e8;
-        outline: none;
-        box-shadow: 0 2px 8px rgba(26,115,232,0.2);
+        border-color: #00ffff;
+        box-shadow: 
+            0 0 20px rgba(0,255,255,0.4),
+            0 4px 20px rgba(0,255,255,0.2);
+        transform: translateY(-2px);
     }
     
     .stSelectbox > div > div {
-        background: #ffffff;
-        border: 1px solid #dadce0;
-        border-radius: 8px;
-        color: #3c4043;
-        box-shadow: 0 1px 6px rgba(32,33,36,0.1);
+        background: rgba(20,20,40,0.8);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(0,255,255,0.3);
+        border-radius: 12px;
+        color: #e0e0ff;
+        box-shadow: 
+            0 4px 20px rgba(0,255,255,0.1),
+            inset 0 1px 0 rgba(255,255,255,0.1);
     }
     
-    /* Modern buttons */
+    /* Quantum Buttons */
     .stButton > button {
-        background: linear-gradient(135deg, #1a73e8 0%, #4285f4 100%);
+        background: linear-gradient(135deg, 
+            rgba(0,255,255,0.2) 0%, 
+            rgba(128,0,255,0.2) 50%,
+            rgba(255,0,128,0.2) 100%);
+        backdrop-filter: blur(15px);
         color: #ffffff;
-        border: none;
-        border-radius: 8px;
-        padding: 0.7rem 1.4rem;
-        font-weight: 500;
-        font-size: 0.95rem;
-        font-family: 'Inter', sans-serif;
-        transition: all 0.2s ease;
-        box-shadow: 0 2px 8px rgba(26,115,232,0.3);
+        border: 1px solid rgba(0,255,255,0.5);
+        border-radius: 12px;
+        padding: 0.8rem 1.6rem;
+        font-weight: 600;
+        font-size: 1rem;
+        font-family: 'Space Grotesk', sans-serif;
+        transition: all 0.3s ease;
+        box-shadow: 
+            0 4px 20px rgba(0,255,255,0.3),
+            inset 0 1px 0 rgba(255,255,255,0.2);
+        text-shadow: 0 0 10px rgba(255,255,255,0.8);
+        letter-spacing: 0.5px;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .stButton > button::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, 
+            transparent, 
+            rgba(255,255,255,0.2), 
+            transparent);
+        transition: all 0.5s;
+    }
+    
+    .stButton > button:hover::before {
+        left: 100%;
     }
     
     .stButton > button:hover {
-        background: linear-gradient(135deg, #1557b0 0%, #3367d6 100%);
-        transform: translateY(-1px);
-        box-shadow: 0 4px 12px rgba(26,115,232,0.4);
+        transform: translateY(-3px);
+        box-shadow: 
+            0 8px 30px rgba(0,255,255,0.4),
+            0 0 40px rgba(0,255,255,0.3);
+        border-color: #00ffff;
     }
     
-    /* Clean success/error boxes */
+    /* Holographic success/error boxes */
     .success-box, .error-box {
-        background: #ffffff;
-        border-radius: 8px;
-        padding: 1rem;
-        margin: 1rem 0;
-        font-weight: 400;
-        border-left: 4px solid;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        backdrop-filter: blur(20px);
+        border-radius: 12px;
+        padding: 1.2rem;
+        margin: 1.5rem 0;
+        font-weight: 500;
+        border: 1px solid;
+        position: relative;
+        overflow: hidden;
     }
     
     .success-box {
-        border-left-color: #34a853;
-        color: #137333;
-        background: #e8f5e8;
+        background: rgba(0,255,128,0.1);
+        border-color: rgba(0,255,128,0.5);
+        color: #00ff80;
+        box-shadow: 0 8px 32px rgba(0,255,128,0.2);
+        text-shadow: 0 0 10px rgba(0,255,128,0.5);
     }
     
     .error-box {
-        border-left-color: #ea4335;
-        color: #d93025;
-        background: #fce8e6;
+        background: rgba(255,0,128,0.1);
+        border-color: rgba(255,0,128,0.5);
+        color: #ff0080;
+        box-shadow: 0 8px 32px rgba(255,0,128,0.2);
+        text-shadow: 0 0 10px rgba(255,0,128,0.5);
     }
     
-    /* Fix text visibility */
+    /* Neural text styling */
     .stApp, .stApp > div, .stApp p, .stApp span, .stApp label {
-        color: #3c4043 !important;
+        color: #e0e0ff !important;
     }
     
-    /* Input labels */
     .stTextInput label, .stSelectbox label, .stSlider label, .stCheckbox label {
-        color: #5f6368 !important;
+        color: #a0a0ff !important;
         font-weight: 500 !important;
+        text-shadow: 0 0 5px rgba(160,160,255,0.5) !important;
     }
     
-    /* Selectbox options */
     .stSelectbox > div > div > div {
-        background: #ffffff !important;
-        color: #3c4043 !important;
+        background: rgba(20,20,40,0.9) !important;
+        color: #e0e0ff !important;
     }
     
-    /* General text elements */
     h1, h2, h3, h4, h5, h6, p, span, div, label {
-        color: #3c4043 !important;
+        color: #e0e0ff !important;
     }
     
-    /* Expander styling */
+    /* Quantum Expander */
     .streamlit-expanderHeader {
-        background: #ffffff !important;
-        color: #1a73e8 !important;
-        border: 1px solid #e8f0fe !important;
-        border-radius: 8px !important;
-        box-shadow: 0 1px 6px rgba(32,33,36,0.1) !important;
-    }
-    
-    /* Sidebar styling */
-    .css-1d391kg {
-        background: #ffffff;
+        background: rgba(20,20,40,0.8) !important;
+        backdrop-filter: blur(10px) !important;
+        color: #00ffff !important;
+        border: 1px solid rgba(0,255,255,0.3) !important;
+        border-radius: 12px !important;
+        box-shadow: 0 4px 20px rgba(0,255,255,0.1) !important;
+        text-shadow: 0 0 10px rgba(0,255,255,0.8) !important;
     }
     }
     .core-config > div {
