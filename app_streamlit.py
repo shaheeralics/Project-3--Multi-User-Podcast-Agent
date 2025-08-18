@@ -49,78 +49,68 @@ st.markdown("""
         font-family: 'Inter', 'Segoe UI', Arial, sans-serif;
     }
     .main-header {
-        background: linear-gradient(120deg, #0f2027 0%, #2c5364 100%);
-        padding: 2.2rem 1rem 1.5rem 1rem;
-        border-radius: 8px;
+        background: none;
+        padding: 2rem 0 1rem 0;
         text-align: center;
-        color: #fff;
+        color: #222;
         margin-bottom: 2rem;
-        box-shadow: 0 2px 16px rgba(44,83,100,0.10);
+        border-bottom: 2px solid #eee;
         letter-spacing: 0.5px;
     }
     .main-header h1 {
-        font-size: 2.4rem;
+        font-size: 2.2rem;
         font-weight: 800;
         margin-bottom: 0.5rem;
         letter-spacing: 1px;
     }
     .main-header p {
-        font-size: 1.1rem;
+        font-size: 1.05rem;
         font-weight: 400;
         margin-bottom: 0.2rem;
-        color: #e0e0e0;
+        color: #555;
     }
     .section-header {
         background: none;
-        color: #2c5364;
-        font-size: 1.3rem;
+        color: #222;
+        font-size: 1.15rem;
         font-weight: 700;
-        margin: 2rem 0 1rem 0;
+        margin: 2rem 0 0.5rem 0;
         padding: 0;
         border: none;
         letter-spacing: 0.5px;
-    }
-    .clean-card {
-        background: #fff;
-        border-radius: 4px;
-        box-shadow: 0 1px 8px rgba(44,83,100,0.07);
-        padding: 1.5rem 1.2rem;
-        margin-bottom: 1.5rem;
-        color: #222;
-        border: 1px solid #f0f0f0;
+        border-bottom: 1px solid #eee;
     }
     .stButton > button {
-        background: linear-gradient(120deg, #00c9a7 0%, #ff6a88 100%);
+        background: #222;
         color: #fff;
         border: none;
-        border-radius: 6px;
+        border-radius: 3px;
         padding: 0.5rem 2rem;
         font-weight: 600;
-        font-size: 1.05rem;
+        font-size: 1rem;
         transition: all 0.2s ease;
-        box-shadow: 0 1px 4px rgba(44,83,100,0.08);
+        box-shadow: none;
     }
     .stButton > button:hover {
-        background: linear-gradient(120deg, #232526 0%, #414345 100%);
+        background: #555;
         color: #fff;
         transform: translateY(-1px) scale(1.03);
-        box-shadow: 0 4px 16px rgba(44,83,100,0.12);
     }
     .success-box, .error-box {
         background: #f8f9fa;
-        border-radius: 4px;
+        border-radius: 2px;
         color: #222;
         padding: 1rem;
         margin: 1rem 0;
         font-weight: 500;
-        box-shadow: 0 1px 4px rgba(44,83,100,0.07);
-        border: 1px solid #e0e0e0;
+        box-shadow: none;
+        border: 1px solid #eee;
     }
     .success-box {
-        border-left: 4px solid #00c9a7;
+        border-left: 3px solid #00c9a7;
     }
     .error-box {
-        border-left: 4px solid #ff6a88;
+        border-left: 3px solid #ff6a88;
     }
 </style>
 """, unsafe_allow_html=True)
