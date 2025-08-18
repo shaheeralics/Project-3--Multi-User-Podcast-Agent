@@ -360,7 +360,7 @@ def render_article_section():
 
 def render_script_generation(openai_model, article_url, host_name, guest_name, aussie_style):
     """Render script generation section"""
-    st.markdown('<div class="section-header"><h3>📝 Script Generation</h3></div>', unsafe_allow_html=True)
+    st.markdown('<div class="section-header"><h3>Script Generation</h3></div>', unsafe_allow_html=True)
     
     if not all([article_url, host_name, guest_name]):
         st.warning("⚠️ Please fill in all required fields above to generate script")
@@ -682,6 +682,7 @@ def main():
     with col4:
         if elevenlabs_api_key and not st.session_state.voices_loaded:
             st.write("")  # Add space for alignment
+            st.write("")  # Add extra space for better alignment
             if st.button("Load Voices"):
                 with st.spinner("Loading voices..."):
                     try:
