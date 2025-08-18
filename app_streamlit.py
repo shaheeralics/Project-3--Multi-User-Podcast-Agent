@@ -822,7 +822,7 @@ def main():
                         
                     except Exception as audio_error:
                         st.warning(f"⚠️ Audio generation failed: {str(audio_error)}")
-                        st.info("📄 Generating script text file instead...")
+                        st.info("📄 Audio synthesis not available in this environment. Generating script text file instead...")
                         
                         # Fallback to script file
                         script_text = generate_script_text_file(st.session_state.generated_script, st.session_state.article_title)
@@ -832,10 +832,11 @@ def main():
                             file_name=f"podcast_script_{st.session_state.article_title.replace(' ', '_')[:50]}.txt",
                             mime="text/plain"
                         )
+                        st.info("💡 **Tip**: Download the script and use text-to-speech software like ElevenLabs, Google TTS, or Azure Speech Services to generate audio locally.")
                         
                 else:
                     # Audio not available, provide script download
-                    st.info("📄 Audio synthesis not available. Generating script text file...")
+                    st.info("📄 Audio synthesis not available in Streamlit Cloud environment. Generating script text file...")
                     script_text = generate_script_text_file(st.session_state.generated_script, st.session_state.article_title)
                     st.download_button(
                         label="📥 Download Script as Text File",
@@ -844,6 +845,7 @@ def main():
                         mime="text/plain"
                     )
                     st.success("✅ Podcast script generated successfully!")
+                    st.info("💡 **Next Steps**: Use the downloaded script with ElevenLabs API directly, or other TTS services to create your podcast audio.")
                 
             except Exception as e:
                 st.error(f"❌ Error creating podcast: {str(e)}")
