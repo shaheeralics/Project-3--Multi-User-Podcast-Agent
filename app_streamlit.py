@@ -22,17 +22,23 @@ from utils.script_prompt import build_messages, validate_script_response
 _AUDIO_AVAILABLE = True
 _AUDIO_ERROR = ""
 try:
-    from utils.audio_streamlit import synthesize_episode, get_available_voices, preview_voice
+    # Try basic audio first (works without pydub/audioop)
+    from utils.audio_basic import synthesize_episode_basic as synthesize_episode
+    from utils.audio_streamlit import get_available_voices, preview_voice
 except Exception as e:
-    _AUDIO_AVAILABLE = False
-    _AUDIO_ERROR = str(e)
-    # Define dummy functions to prevent import errors
-    def synthesize_episode(*args, **kwargs):
-        raise Exception(f"Audio synthesis not available: {_AUDIO_ERROR}")
-    def get_available_voices(*args, **kwargs):
-        return []
-    def preview_voice(*args, **kwargs):
-        return None
+    try:
+        # Fallback to advanced audio
+        from utils.audio_streamlit import synthesize_episode, get_available_voices, preview_voice
+    except Exception as e2:
+        _AUDIO_AVAILABLE = False
+        _AUDIO_ERROR = str(e2)
+        # Define dummy functions to prevent import errors
+        def synthesize_episode(*args, **kwargs):
+            raise Exception(f"Audio synthesis not available: {_AUDIO_ERROR}")
+        def get_available_voices(*args, **kwargs):
+            return []
+        def preview_voice(*args, **kwargs):
+            return None
 
 # Page configuration
 st.set_page_config(
@@ -794,13 +800,13 @@ def main():
                     st.info("🎵 Generating podcast audio...")
                     
                     try:
-                        # Use the existing audio synthesis function
+                        # Use the basic audio synthesis function (works without pydub)
                         audio_bytes, filename = synthesize_episode(
                             script=st.session_state.generated_script,
-                            pause_ms=pause_duration,
                             host_voice_id=host_voice[1],
                             guest_voice_id=guest_voice[1],
-                            eleven_key=elevenlabs_api_key
+                            eleven_key=elevenlabs_api_key,
+                            pause_ms=pause_duration
                         )
                         
                         st.session_state.audio_generated = True
