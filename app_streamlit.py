@@ -46,9 +46,8 @@ st.set_page_config(
 st.markdown("""
 <style>
     /* Align Load Voices button with specific pixel margin */
-    button[kind="primary"]:has-text("Load Voices"), 
-    button:has-text("Load Voices") {
-        margin-top: 200px !important;
+    div[data-testid="column"]:nth-child(4) button {
+        margin-top: 25px !important;
     }
     body, .main-header, .section-header {
         font-family: 'Inter', 'Segoe UI', Arial, sans-serif;
@@ -686,6 +685,7 @@ def main():
         elevenlabs_api_key = st.text_input("ElevenLabs API Key", type="password", help="Required for voice synthesis")
     with col4:
         if elevenlabs_api_key and not st.session_state.voices_loaded:
+            st.write("")  # Add space for alignment
             if st.button("Load Voices"):
                 with st.spinner("Loading voices..."):
                     try:
