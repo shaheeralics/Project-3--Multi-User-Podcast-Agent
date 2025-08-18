@@ -803,7 +803,12 @@ def main():
         guest_name = "Sarah"
 
     # Configuration inputs (moved here from removed Article Input section)
-    article_url = st.text_input("Article URL", placeholder="https://example.com/article", help="Paste the URL of the article")
+    col_url, col_btn = st.columns([3, 1])  # 75% for URL, 25% for button
+    with col_url:
+        article_url = st.text_input("Article URL", placeholder="https://example.com/article", help="Paste the URL of the article")
+    with col_btn:
+        st.markdown('<div style="margin-top: 28px;"></div>', unsafe_allow_html=True)
+        scrape_button = st.button("🔍 Scrape Article", disabled=not article_url)
     
     col_config1, col_config2 = st.columns(2)
     with col_config1:
