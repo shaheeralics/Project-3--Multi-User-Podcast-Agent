@@ -45,7 +45,7 @@ st.set_page_config(
 # Custom CSS for n8n.io inspired professional design
 st.markdown("""
     .load-voices-btn {
-        margin-top: 30px !important;
+    margin-top: 10px !important;
     }
 <style>
     body, .main-header, .section-header {
@@ -683,16 +683,16 @@ def main():
             elevenlabs_api_key = st.text_input("ElevenLabs API Key", type="password", help="Required for voice synthesis")
         with col2b:
             if elevenlabs_api_key and not st.session_state.voices_loaded:
-                if st.markdown('<div class="load-voices-btn">', unsafe_allow_html=True) or True:
-                    if st.button("Load Voices"):
-                        with st.spinner("Loading voices..."):
-                            try:
-                                voices = get_available_voices(elevenlabs_api_key)
-                                st.session_state.available_voices = voices
-                                st.session_state.voices_loaded = True
-                                st.success(f"Loaded {len(voices)} voices successfully!")
-                            except Exception as e:
-                                st.error(f"Failed to load voices: {str(e)}")
+                st.markdown('<div class="load-voices-btn">', unsafe_allow_html=True)
+                if st.button("Load Voices"):
+                    with st.spinner("Loading voices..."):
+                        try:
+                            voices = get_available_voices(elevenlabs_api_key)
+                            st.session_state.available_voices = voices
+                            st.session_state.voices_loaded = True
+                            st.success(f"Loaded {len(voices)} voices successfully!")
+                        except Exception as e:
+                            st.error(f"Failed to load voices: {str(e)}")
                 st.markdown('</div>', unsafe_allow_html=True)
         if st.session_state.voices_loaded:
             voice_options = [(v['name'], v['voice_id']) for v in st.session_state.available_voices]
