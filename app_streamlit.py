@@ -921,10 +921,6 @@ def main():
                 if i < len(st.session_state.generated_script):
                     st.markdown("---")
 
-    # Audio Generation Section
-    st.markdown('<div class="section-header">Audio Generation</div>', unsafe_allow_html=True)
-    render_audio_generation(host_voice, guest_voice, pause_duration)
-
     # Footer
     st.markdown("""
     <div style="text-align: center; color: #888; margin-top:2rem; font-size:0.95rem;">
