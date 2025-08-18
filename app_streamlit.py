@@ -679,21 +679,17 @@ def main():
         openai_model = st.selectbox("Model", ["gpt-4o-mini", "gpt-4o", "gpt-3.5-turbo"], help="Choose the OpenAI model")
     with col2:
         col2a, col2b = st.columns([2,1])
-        with col2a:
-            elevenlabs_api_key = st.text_input("ElevenLabs API Key", type="password", help="Required for voice synthesis")
-        with col2b:
-            if elevenlabs_api_key and not st.session_state.voices_loaded:
-                st.markdown('<div class="load-voices-btn">', unsafe_allow_html=True)
-                if st.button("Load Voices"):
-                    with st.spinner("Loading voices..."):
-                        try:
-                            voices = get_available_voices(elevenlabs_api_key)
-                            st.session_state.available_voices = voices
-                            st.session_state.voices_loaded = True
-                            st.success(f"Loaded {len(voices)} voices successfully!")
-                        except Exception as e:
-                            st.error(f"Failed to load voices: {str(e)}")
-                st.markdown('</div>', unsafe_allow_html=True)
+        elevenlabs_api_key = col2a.text_input("ElevenLabs API Key", type="password", help="Required for voice synthesis")
+        if elevenlabs_api_key and not st.session_state.voices_loaded:
+            if col2b.button("Load Voices"):
+                with st.spinner("Loading voices..."):
+                    try:
+                        voices = get_available_voices(elevenlabs_api_key)
+                        st.session_state.available_voices = voices
+                        st.session_state.voices_loaded = True
+                        st.success(f"Loaded {len(voices)} voices successfully!")
+                    except Exception as e:
+                        st.error(f"Failed to load voices: {str(e)}")
         if st.session_state.voices_loaded:
             voice_options = [(v['name'], v['voice_id']) for v in st.session_state.available_voices]
             host_voice = st.selectbox("Host Voice", voice_options, format_func=lambda x: x[0])
