@@ -702,33 +702,42 @@ def main():
         
         # Guest voice preview
         if preview_guest and guest_voice:
-            with col11:
-                with st.spinner("Generating guest voice preview..."):
-                    try:
-                        audio_data = preview_voice(
-                            elevenlabs_api_key,
-                            guest_voice[1],
-                            f"Hello! I'm {guest_name}, excited to be here!"
-                        )
-                        st.audio(audio_data)
-                        st.caption(f"Guest: {guest_name}")
-                    except Exception as e:
-                        st.error(f"Guest preview failed: {str(e)}")
+            with st.spinner("Generating guest voice preview..."):
+                try:
+                    audio_data = preview_voice(
+                        elevenlabs_api_key,
+                        guest_voice[1],
+                        f"Hello! I'm {guest_name}, excited to be here!"
+                    )
+                    st.session_state.guest_preview_audio = audio_data
+                    st.session_state.guest_preview_name = guest_name
+                except Exception as e:
+                    st.error(f"Guest preview failed: {str(e)}")
         
         # Host voice preview
         if preview_host and host_voice:
-            with col12:
-                with st.spinner("Generating host voice preview..."):
-                    try:
-                        audio_data = preview_voice(
-                            elevenlabs_api_key,
-                            host_voice[1],
-                            f"G'day! I'm {host_name}, your podcast host."
-                        )
-                        st.audio(audio_data)
-                        st.caption(f"Host: {host_name}")
-                    except Exception as e:
-                        st.error(f"Host preview failed: {str(e)}")
+            with st.spinner("Generating host voice preview..."):
+                try:
+                    audio_data = preview_voice(
+                        elevenlabs_api_key,
+                        host_voice[1],
+                        f"G'day! I'm {host_name}, your podcast host."
+                    )
+                    st.session_state.host_preview_audio = audio_data
+                    st.session_state.host_preview_name = host_name
+                except Exception as e:
+                    st.error(f"Host preview failed: {str(e)}")
+        
+        # Display stored previews
+        with col11:
+            if hasattr(st.session_state, 'guest_preview_audio') and st.session_state.guest_preview_audio:
+                st.audio(st.session_state.guest_preview_audio)
+                st.caption(f"Guest: {st.session_state.guest_preview_name}")
+        
+        with col12:
+            if hasattr(st.session_state, 'host_preview_audio') and st.session_state.host_preview_audio:
+                st.audio(st.session_state.host_preview_audio)
+                st.caption(f"Host: {st.session_state.host_preview_name}")
         
     else:
         host_voice = guest_voice = None
