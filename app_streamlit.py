@@ -199,6 +199,51 @@ st.markdown("""
         backdrop-filter: blur(10px);
         box-shadow: 0 0 30px rgba(0, 212, 255, 0.2);
     }
+    
+    /* Fix text visibility in dark mode */
+    .stApp, .stApp > div, .stApp p, .stApp span, .stApp label {
+        color: #ffffff !important;
+    }
+    
+    /* Input labels and text */
+    .stTextInput label, .stSelectbox label, .stSlider label, .stCheckbox label {
+        color: #00d4ff !important;
+        font-weight: 600 !important;
+        text-shadow: 0 0 5px rgba(0, 212, 255, 0.3) !important;
+    }
+    
+    /* Selectbox options */
+    .stSelectbox > div > div > div {
+        background: #1a1a2e !important;
+        color: #ffffff !important;
+    }
+    
+    /* Slider text */
+    .stSlider > div > div > div > div {
+        color: #ffffff !important;
+    }
+    
+    /* Checkbox text */
+    .stCheckbox > label > div > p {
+        color: #ffffff !important;
+    }
+    
+    /* Metric text */
+    .metric-container, .metric-container * {
+        color: #ffffff !important;
+    }
+    
+    /* Expander text */
+    .streamlit-expanderHeader {
+        background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%) !important;
+        color: #00d4ff !important;
+        border: 1px solid #00d4ff !important;
+    }
+    
+    /* General text elements */
+    h1, h2, h3, h4, h5, h6, p, span, div, label {
+        color: #ffffff !important;
+    }
     }
     .core-config > div {
         min-width: 140px;
