@@ -681,8 +681,7 @@ def main():
         elevenlabs_api_key = st.text_input("ElevenLabs API Key", type="password", help="Required for voice synthesis")
     with col4:
         if elevenlabs_api_key and not st.session_state.voices_loaded:
-            st.write("")  # Add space for alignment
-            st.write("")  # Add more space
+            st.markdown('<div style="margin-top: 25px;"></div>', unsafe_allow_html=True)
             if st.button("Load Voices"):
                 with st.spinner("Loading voices..."):
                     try:
