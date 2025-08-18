@@ -810,11 +810,9 @@ def main():
         st.markdown('<div style="margin-top: 28px;"></div>', unsafe_allow_html=True)
         scrape_button = st.button("🔍 Scrape Article", disabled=not article_url)
     
-    col_config1, col_config2 = st.columns(2)
-    with col_config1:
-        pause_duration = st.slider("Pause between speakers (ms)", min_value=200, max_value=2000, value=800, step=100)
-    with col_config2:
-        aussie_style = st.checkbox("Australian Style", value=True, help="Generate script in Australian conversational style")
+    # Set default values
+    pause_duration = 800  # Default 800ms pause
+    aussie_style = True   # Default Australian style
     
     # Script Generation
     if article_url:
