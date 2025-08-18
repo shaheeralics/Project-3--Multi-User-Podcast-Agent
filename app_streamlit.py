@@ -45,90 +45,76 @@ st.set_page_config(
 # Custom CSS for n8n.io inspired professional design
 st.markdown("""
 <style>
-    body, .main-header, .glass-card, .section-header {
+    body, .main-header, .section-header {
         font-family: 'Inter', 'Segoe UI', Arial, sans-serif;
     }
     .main-header {
         background: linear-gradient(120deg, #0f2027 0%, #2c5364 100%);
-        padding: 2.8rem 1rem 2.2rem 1rem;
-        border-radius: 22px;
+        padding: 2.2rem 1rem 1.5rem 1rem;
+        border-radius: 8px;
         text-align: center;
         color: #fff;
-        margin-bottom: 2.5rem;
-        box-shadow: 0 8px 40px rgba(44,83,100,0.22);
+        margin-bottom: 2rem;
+        box-shadow: 0 2px 16px rgba(44,83,100,0.10);
         letter-spacing: 0.5px;
-        position: relative;
-        overflow: hidden;
-    }
-    .main-header::after {
-        content: "";
-        position: absolute;
-        top: 0; left: 0; right: 0; bottom: 0;
-        background: linear-gradient(120deg, rgba(0,201,167,0.08) 0%, rgba(255,106,136,0.08) 100%);
-        pointer-events: none;
     }
     .main-header h1 {
-        font-size: 3.2rem;
-        font-weight: 900;
+        font-size: 2.4rem;
+        font-weight: 800;
         margin-bottom: 0.5rem;
-        letter-spacing: 1.5px;
-        text-shadow: 0 2px 16px rgba(44,83,100,0.18);
+        letter-spacing: 1px;
     }
     .main-header p {
-        font-size: 1.25rem;
+        font-size: 1.1rem;
         font-weight: 400;
         margin-bottom: 0.2rem;
         color: #e0e0e0;
     }
-    .glass-card {
-        background: rgba(24,26,27,0.85);
-        border-radius: 18px;
-        box-shadow: 0 4px 32px rgba(44,83,100,0.18);
-        padding: 2rem 1.5rem;
-        margin-bottom: 2rem;
-        backdrop-filter: blur(8px);
-        border: 1px solid rgba(255,255,255,0.08);
-        color: #e0e0e0;
-        position: relative;
-    }
     .section-header {
-        background: linear-gradient(120deg, #232526 0%, #414345 100%);
-        padding: 1.1rem 1.2rem;
-        border-radius: 12px;
-        margin: 1.2rem 0 1.2rem 0;
-        color: #fff !important;
-        font-size: 1.25rem;
-        font-weight: 600;
-        box-shadow: 0 2px 16px rgba(44,83,100,0.10);
+        background: none;
+        color: #2c5364;
+        font-size: 1.3rem;
+        font-weight: 700;
+        margin: 2rem 0 1rem 0;
+        padding: 0;
         border: none;
         letter-spacing: 0.5px;
+    }
+    .clean-card {
+        background: #fff;
+        border-radius: 4px;
+        box-shadow: 0 1px 8px rgba(44,83,100,0.07);
+        padding: 1.5rem 1.2rem;
+        margin-bottom: 1.5rem;
+        color: #222;
+        border: 1px solid #f0f0f0;
     }
     .stButton > button {
         background: linear-gradient(120deg, #00c9a7 0%, #ff6a88 100%);
         color: #fff;
         border: none;
-        border-radius: 22px;
+        border-radius: 6px;
         padding: 0.5rem 2rem;
         font-weight: 600;
-        font-size: 1.1rem;
+        font-size: 1.05rem;
         transition: all 0.2s ease;
-        box-shadow: 0 2px 8px rgba(44,83,100,0.10);
+        box-shadow: 0 1px 4px rgba(44,83,100,0.08);
     }
     .stButton > button:hover {
         background: linear-gradient(120deg, #232526 0%, #414345 100%);
         color: #fff;
         transform: translateY(-1px) scale(1.03);
-        box-shadow: 0 6px 24px rgba(44,83,100,0.18);
+        box-shadow: 0 4px 16px rgba(44,83,100,0.12);
     }
     .success-box, .error-box {
-        background: rgba(35,37,38,0.95);
-        border-radius: 8px;
-        color: #fff;
+        background: #f8f9fa;
+        border-radius: 4px;
+        color: #222;
         padding: 1rem;
         margin: 1rem 0;
         font-weight: 500;
-        box-shadow: 0 2px 10px rgba(44,83,100,0.10);
-        border: none;
+        box-shadow: 0 1px 4px rgba(44,83,100,0.07);
+        border: 1px solid #e0e0e0;
     }
     .success-box {
         border-left: 4px solid #00c9a7;
@@ -695,7 +681,7 @@ def main():
     
     # Footer (minimal, clean)
     st.markdown("""
-    <div style="text-align: center; color: #e0e0e0; margin-top:2rem; font-size:0.95rem;">
+    <div style="text-align: center; color: #888; margin-top:2rem; font-size:0.95rem;">
         Podcast GPT &mdash; Powered by Streamlit, OpenAI, and ElevenLabs
     </div>
     """, unsafe_allow_html=True)
