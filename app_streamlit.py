@@ -45,9 +45,6 @@ st.set_page_config(
 # Custom CSS for n8n.io inspired professional design
 st.markdown("""
 <style>
-    div[data-testid="column"]:nth-child(2) div[data-testid="stVerticalBlock"] > div:nth-child(2) button {
-        margin-top: 25px;
-    }
     body, .main-header, .section-header {
         font-family: 'Inter', 'Segoe UI', Arial, sans-serif;
     }
@@ -683,6 +680,7 @@ def main():
             elevenlabs_api_key = st.text_input("ElevenLabs API Key", type="password", help="Required for voice synthesis")
         with col2b:
             if elevenlabs_api_key and not st.session_state.voices_loaded:
+                st.write("")  # Add space for alignment
                 if st.button("Load Voices"):
                     with st.spinner("Loading voices..."):
                         try:
