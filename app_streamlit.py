@@ -47,7 +47,7 @@ st.markdown("""
 <style>
     /* Align Load Voices button with specific pixel margin */
     div[data-testid="column"]:nth-child(4) button {
-        margin-top: 25px !important;
+        margin-top: 55px !important;
     }
     body, .main-header, .section-header {
         font-family: 'Inter', 'Segoe UI', Arial, sans-serif;
