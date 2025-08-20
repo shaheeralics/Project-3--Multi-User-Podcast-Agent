@@ -658,27 +658,35 @@ def main():
     initialize_session_state()
     render_header()
 
-    # First Line: API keys, model, and load voices
-    col1, col2, col3, col4 = st.columns([2, 1.5, 2, 1])
-    with col1:
-        openai_api_key = st.text_input("OpenAI API Key", type="password", help="Required for script generation")
-    with col2:
-        openai_model = st.selectbox("Model", ["gpt-4o-mini", "gpt-4o", "gpt-3.5-turbo"], help="Choose the OpenAI model")
-    with col3:
-        elevenlabs_api_key = st.text_input("ElevenLabs API Key", type="password", help="Required for voice synthesis")
-    with col4:
-        if elevenlabs_api_key and not st.session_state.voices_loaded:
-            st.markdown('<div style="margin-top: 28px;"></div>', unsafe_allow_html=True)
-            if st.button("Load Voices"):
-                with st.spinner("Loading voices..."):
-                    try:
-                        voices = get_available_voices(elevenlabs_api_key)
-                        st.session_state.available_voices = voices
-                        st.session_state.voices_loaded = True
-                        st.success(f"Loaded {len(voices)} voices successfully!")
-                    except Exception as e:
-                        st.error(f"Failed to load voices: {str(e)}")
-    
+    # Get API keys from Streamlit secrets and set default model
+    try:
+        openai_api_key = st.secrets["openai_api"]
+        elevenlabs_api_key = st.secrets["elevenlab_api"]
+    except (KeyError, AttributeError):
+        st.error("API keys (openai_api, elevenlab_api) not found in Streamlit secrets.")
+        st.info("Please add your API keys to the secrets.toml file and restart the app.")
+        st.code("""
+[secrets]
+openai_api = "sk-..."
+elevenlab_api = "..."
+        """, language="toml")
+        st.stop()
+        
+    openai_model = "gpt-4o-mini"
+
+    # Auto-load voices on startup if not already loaded
+    if not st.session_state.voices_loaded:
+        with st.spinner("Initializing AI voices..."):
+            try:
+                voices = get_available_voices(elevenlabs_api_key)
+                if not voices:
+                    raise Exception("No voices returned from ElevenLabs. Check your API key and account status.")
+                st.session_state.available_voices = voices
+                st.session_state.voices_loaded = True
+            except Exception as e:
+                st.error(f"Fatal Error: Could not load voices from ElevenLabs. {e}")
+                st.stop()
+
     # Second Line: Names, Voice Selection, and Preview Buttons (only show if voices are loaded)
     if st.session_state.voices_loaded:
         voice_options = [(v['name'], v['voice_id']) for v in st.session_state.available_voices]
