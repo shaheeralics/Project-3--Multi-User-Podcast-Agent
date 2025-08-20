@@ -758,13 +758,21 @@ elevenlab_api = "..."
         host_name = "Alex"
         guest_name = "Sarah"
 
-    # Configuration inputs (moved here from removed Article Input section)
-    col_url, col_btn = st.columns([3, 1])  # 75% for URL, 25% for button
-    with col_url:
-        article_url = st.text_input("Article URL", placeholder="https://example.com/article", help="Paste the URL of the article")
-    with col_btn:
-        st.markdown('<div style="margin-top: 28px;"></div>', unsafe_allow_html=True)
-        record_podcast = st.button("🎙️ Record Podcast", disabled=not (article_url and host_voice and guest_voice and elevenlabs_api_key and openai_api_key))
+    # Centered configuration inputs with 15% padding on each side
+    left_pad, center_col, right_pad = st.columns([0.15, 0.7, 0.15])
+    with center_col:
+        # Nested columns for the input field and button
+        col_url, col_btn = st.columns([3, 1])
+        with col_url:
+            article_url = st.text_input(
+                "Article URL", 
+                placeholder="Paste article URL here...", 
+                help="Paste the URL of the article to generate a podcast",
+                label_visibility="collapsed"
+            )
+        with col_btn:
+            st.markdown('<div style="margin-top: 28px;"></div>', unsafe_allow_html=True)
+            record_podcast = st.button("🎙️ Record Podcast", disabled=not (article_url and host_voice and guest_voice and elevenlabs_api_key and openai_api_key))
     
     # Set default values
     pause_duration = 800  # Default 800ms pause
