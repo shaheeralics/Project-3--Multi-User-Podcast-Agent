@@ -764,6 +764,7 @@ elevenlab_api = "..."
         # Nested columns for the input field and button
         col_url, col_btn = st.columns([3, 1])
         with col_url:
+            st.markdown('<div style="margin-top: 28px;"></div>', unsafe_allow_html=True)
             article_url = st.text_input(
                 "Article URL", 
                 placeholder="Paste article URL here...", 
